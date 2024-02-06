@@ -4,21 +4,22 @@ import { createStackNavigator, createNativeStackNavigator } from '@react-navigat
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Home } from '../views/Home.jsx';
 import { About } from '../views/About.jsx';
+import { SearchBy } from '../views/SearchBy.jsx';
+import { Favorites } from '../views/Favorites.jsx';
 import { SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import { playSound } from '../utils/tapSound.jsx'
 import { MaterialIcons } from '@expo/vector-icons';
-
 const ButtomTab = createBottomTabNavigator();
 
 function ButtomTabGroup() {
     return (
         <ButtomTab.Navigator>
             <ButtomTab.Screen name="Naruto Characters!" component={Home} options={homeOptions} />
-            <ButtomTab.Screen name="Search By" component={About} options={searchByOptions} />
-            <ButtomTab.Screen name="Favorites" component={About} options={favOptions} />
+            <ButtomTab.Screen name="Search By" component={SearchBy} options={searchByOptions} />
+            <ButtomTab.Screen name="Favorites" component={Favorites} options={favOptions} />
             <ButtomTab.Screen name="About" component={About} options={aboutOptions} />
         </ButtomTab.Navigator>
     );
@@ -40,16 +41,23 @@ const homeOptions = {
     tabBarIcon: ({ color, size }) => (
         <MaterialCommunityIcons name="shuriken" size={35} color={color} />
     ),
+    tabBarStyle: {
+        backgroundColor: 'rgba(20,20,25,1)',
+        borderTopWidth: 1.5,
+        borderTopColor: 'white',
+        height: 50,
+    },
     headerStyle: {
         backgroundColor: 'rgba(16,41,78,1)', // Header background color
         borderBottomWidth: 0.5, // Header bottom border width
         borderBottomColor: 'white', // Header bottom border color
         elevation: 0, // Header elevation in Android (to avoid shadow)
+        height: 60,
     },
     headerTitleStyle: {
         fontWeight: 'bold', // Header title font weight
         color: 'white', // Header title text color
-        fontSize: 13, // Header title font size
+        fontSize: 14, // Header title font size
         maxWidth: '100%', // Maximum width for the header title
         textAlign: 'center', // Horizontal alignment of header title
         textShadowColor: 'black', // Header title text shadow color
@@ -70,6 +78,12 @@ const favOptions = {
     tabBarIcon: ({ color, size }) => (
         <AntDesign name="star" size={24} color={color} />
     ),
+    tabBarStyle: {
+        backgroundColor: 'rgba(20,20,25,1)',
+        borderTopWidth: 1.5,
+        borderTopColor: 'white',
+        height: 50,
+    },
     tabBarBadge: 0,
     tabBarBadgeStyle: { fontSize: 11, width: 15, height: 15, borderRadius: 20, backgroundColor: 'red' },
 
@@ -78,6 +92,7 @@ const favOptions = {
         borderBottomWidth: 0.5, // Header bottom border width
         borderBottomColor: 'white', // Header bottom border color
         elevation: 0, // Header elevation in Android (to avoid shadow)
+        height: 60,
     },
     headerTintColor: 'red',
     headerTitleStyle: {
@@ -105,11 +120,18 @@ const searchByOptions = {
     tabBarIcon: ({ color, size }) => (
         <MaterialIcons name="person-search" size={32} color={color} />
     ),
+    tabBarStyle: {
+        backgroundColor: 'rgba(20,20,25,1)',
+        borderTopWidth: 1.5,
+        borderTopColor: 'white',
+        height: 50,
+    },
     headerStyle: {
         backgroundColor: 'rgba(16,41,78,1)', // Header background color
         borderBottomWidth: 0.5, // Header bottom border width
         borderBottomColor: 'white', // Header bottom border color
         elevation: 0, // Header elevation in Android (to avoid shadow)
+        height: 60,
     },
     headerTintColor: 'red',
     headerTitleStyle: {
@@ -135,8 +157,14 @@ const searchByOptions = {
 const aboutOptions = {
     tabBarLabel: 'About',
     tabBarIcon: ({ color, size }) => (
-        <FontAwesome name="github-square" size={30} color='black' />
+        <FontAwesome name="github-square" size={30} color={color} />
     ),
+    tabBarStyle: {
+        backgroundColor: 'rgba(20,20,25,1)',
+        borderTopWidth: 1.5,
+        borderTopColor: 'white',
+        height: 50,
+    },
     tabBarBadge: 1,
     tabBarBadgeStyle: { fontSize: 11, width: 15, height: 15, borderRadius: 20, backgroundColor: '#FF8528' },
 
@@ -145,6 +173,7 @@ const aboutOptions = {
         borderBottomWidth: 0.5, // Header bottom border width
         borderBottomColor: 'white', // Header bottom border color
         elevation: 0, // Header elevation in Android (to avoid shadow)
+        height: 60,
     },
     headerTintColor: 'red',
     headerTitleStyle: {

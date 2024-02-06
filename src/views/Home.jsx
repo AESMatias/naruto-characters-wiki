@@ -76,7 +76,7 @@ export const Home = () => {
                     showsVerticalScrollIndicator={false}
                 />
             </View>
-            <WriteNameComponent setdataFetched={setdataFetched} onChangeText={onChangeText} text={text} />
+            {/* <WriteNameComponent setdataFetched={setdataFetched} onChangeText={onChangeText} text={text} /> */}
         </SafeAreaView>
     )
 
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingTop: 10,
         width: '100%',
-        marginBottom: 5,
+        marginBottom: 0,
         backgroundColor: '#fff',
         backgroundColor: 'rgba(10,30,60,1)',
         borderWidth: 1,

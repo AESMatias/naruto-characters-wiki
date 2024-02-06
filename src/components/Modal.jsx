@@ -4,6 +4,7 @@ import {
     View, Text, StyleSheet, TouchableOpacity
 } from 'react-native';
 import { playSound } from '../utils/tapSound.jsx'
+import { FontAwesome } from '@expo/vector-icons';
 
 export const Modal = ({ isModalOpen, withInput, children, ...props }) => {
     const { onRequestClose, FilledModal } = props;
@@ -24,14 +25,14 @@ export const Modal = ({ isModalOpen, withInput, children, ...props }) => {
                     {FilledModal.id}
                     {FilledModal.jutsu}
                 </Text>
-                : <Text style={styles.text}>NO HAY NADA</Text>}
+                : <Text style={styles.text}>There is nothing here</Text>}
 
 
 
             <TouchableOpacity onPress={handleCloseButton}
                 style={styles.button}>
                 <Text style={styles.button_text}>
-                    Close
+                    <FontAwesome name="close" size={30} color="white" />
                 </Text>
             </TouchableOpacity>
         </KeyboardAvoidingView>
@@ -64,9 +65,10 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         justifyContent: 'center',
         alignItems: 'stretch',
-        backgroundColor: 'rgba(5, 10, 30, 1)', // Fondo oscuro semitransparente
-        borderColor: 'black',
+        backgroundColor: 'rgba(5, 10, 30, 1)',// 'rgba(20, 90, 200, 0.25)',
+        borderColor: 'blue',
         borderWidth: 0.5,
+        borderRadius: 25,
 
         paddingVertical: 200,
         width: '90%',

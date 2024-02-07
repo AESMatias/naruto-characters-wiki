@@ -5,23 +5,12 @@ import { AntDesign } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { playSound } from '../utils/tapSound.jsx'
-import { useNavigation } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 
-export const CharModal = ({ charData, setcharModal }) => {
-
-    const { navigate } = useNavigation();
+export const CharDetails = ({ charData, ...props }) => {
 
 
-    handleOnPress = () => {
-        charDataView = charData;
-        console.log('LA DATRA ES ', charData, { charDataView });
-        navigate('CharDetails', { charDataView });
-        playSound();
-
-        setcharModal(false)
-
-    }
-
+    const { params: { charDataView } } = useRoute();
 
     let returnedValue = charData ? (
         <View style={styles.general_container}>
@@ -39,7 +28,7 @@ export const CharModal = ({ charData, setcharModal }) => {
                 <Text style={styles.text}>Jutsu: {charData.jutsu ? charData.jutsu[0] : 'Unknown'} ...</Text>
                 {/* <Text style={styles.text}>Rank: {charData.rank || 'None'}</Text> */}
 
-                <TouchableOpacity onPress={handleOnPress}>
+                <TouchableOpacity onPress={playSound}>
                     <Text style={styles.text_more}>View more info  {
                         <Entypo name="info-with-circle" size={17} color="white" />}</Text>
                 </TouchableOpacity>
@@ -47,19 +36,33 @@ export const CharModal = ({ charData, setcharModal }) => {
                     <Text style={styles.text_favorite}>Add to favorites  {
                         <AntDesign name="star" size={16} color="white" />}</Text>
                 </TouchableOpacity>
-                {/* <MaterialCommunityIcons name="shuriken" size={30} color="white" style={styles.shuriken} /> */}
+                <MaterialCommunityIcons name="shuriken" size={30} color="white" style={styles.shuriken} />
             </View>
             <View styles={styles.container_info}>
-                {/* <Text style={styles.text_info}>Status: {charData.status}</Text>
-            <Text style={styles.text_info}>Species: {charData.species}</Text>
-            <Text style={styles.text_info}>Gender: {charData.gender}</Text>
-            <Text style={styles.text_info}>Location: {charData.location.name}</Text> */}
             </View>
-        </View>) : <Text>Error retriving the Character information</Text>;
+        </View>) :
+        //new data
+        (charDataView ?
+            <View style={styles.general_container}>
+                <View style={styles.container}>
+                    <Image
+                        style={styles.image}
+                        source={{ uri: `${charDataView.images[0]}` }}
+                    />
+                    <Text>BIEN!</Text>
+                    <Text style={styles.text}>
+                        {charDataView.name ?
+                            charDataView.name
+                            : 'Unknown Name'}
+                    </Text>
+                    <Text style={styles.text}> </Text>
+                </View>
+            </View> : <Text>Error retriving the Character information</Text>)
+
     return (
         returnedValue
     )
-}
+};
 
 const styles = StyleSheet.create({
     shuriken: {
@@ -84,7 +87,7 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: 'white',
         borderRadius: 5,
-        width: '90%',
+
         minHeight: 400,
         alignSelf: 'center',
     },

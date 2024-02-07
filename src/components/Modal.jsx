@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     Modal as RNModal, KeyboardAvoidingView,
-    View, Text, StyleSheet, TouchableOpacity
+    View, Text, StyleSheet, TouchableOpacity, Button
 } from 'react-native';
 import { playSound } from '../utils/tapSound.jsx'
 import { FontAwesome } from '@expo/vector-icons';
@@ -14,12 +14,17 @@ export const Modal = ({ isModalOpen, withInput, children, ...props }) => {
         playSound();
     }
 
+    // const modifiedChildren = React.Children.map(children, child => {
+    //     return React.cloneElement(child, { onRequestClose });
+    // });
+
     const content = withInput ? (
         <KeyboardAvoidingView behavior='height' style={styles.modalContent}>
             {children}
 
 
             {FilledModal ?
+
                 <Text style={styles.text}>
                     {FilledModal.name}
                     {FilledModal.id}
@@ -38,6 +43,7 @@ export const Modal = ({ isModalOpen, withInput, children, ...props }) => {
         </KeyboardAvoidingView>
     ) : (
         <View style={styles.modalContent}>
+
             {children}
             <Text style={styles.text}>
                 MODAL WITH CONTENT IN THE MODAL!

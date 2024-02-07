@@ -15,21 +15,20 @@ export const Home = () => {
     const [charModal, setcharModal] = useState(false) // The modal for every character
     const [FilledModal, setFilledModal] = useState({}) // The modal object of every character
 
-
     useEffect(() => {
 
-        console.log('OBJECT CHANGED ', FilledModal)
+        // console.log('OBJECT CHANGED ', FilledModal)
 
         return () => {
-            console.log('OBJECT HAS BEEN CHANGED RETURNNNNNNNNNNN ', FilledModal)
+            // console.log('OBJECT HAS BEEN CHANGED RETURNNNNNNNNNNN ', FilledModal)
         }
     }, [FilledModal]) // When some character is clicked, the object of the character is passed to the modal
 
     useEffect(() => {
-        console.log('text  ', text)
+        // console.log('text  ', text)
 
         return () => {
-            console.log('text changed return DESFASADO ANTERIOR ', text)
+            // console.log('text changed return DESFASADO ANTERIOR ', text)
         }
     }, [text])
 
@@ -38,7 +37,7 @@ export const Home = () => {
     }, []); // Started when the component is mounted
 
     useEffect(() => {
-        console.log('useEffect> ', dataFetched);
+        // console.log('useEffect> ', dataFetched);
     }, [dataFetched]); // Observe changes in dataFetched
 
     useEffect(() => {
@@ -56,7 +55,7 @@ export const Home = () => {
                 withInput
                 FilledModal={[FilledModal]}
                 onRequestClose={() => setcharModal(false)}>
-                <CharModal charData={FilledModal} />
+                <CharModal charData={FilledModal} setcharModal={setcharModal} />
                 {/* <Text>INSIDE MODAL</Text> */}
             </Modal>
             <View style={styles.flat_container}>

@@ -1,6 +1,6 @@
 import react from 'react';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
-import { createStackNavigator, createNativeStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Home } from '../views/Home.jsx';
 import { About } from '../views/About.jsx';
@@ -12,12 +12,24 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import { playSound } from '../utils/tapSound.jsx'
 import { MaterialIcons } from '@expo/vector-icons';
+import { CharDetails } from '../views/CharDetails.jsx';
+
 const ButtomTab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
+
+function StackGroup() {
+    return (
+        <Stack.Navigator>
+            <Stack.Screen name="Home" component={Home} options={deletedHeader} />
+            <Stack.Screen name="CharDetails" component={CharDetails} options={deletedHeader} />
+        </Stack.Navigator>
+    );
+}
 
 function ButtomTabGroup() {
     return (
         <ButtomTab.Navigator>
-            <ButtomTab.Screen name="Naruto Characters!" component={Home} options={homeOptions} />
+            <ButtomTab.Screen name="Naruto Characters!" component={StackGroup} options={homeOptions} />
             <ButtomTab.Screen name="Search By" component={SearchBy} options={searchByOptions} />
             <ButtomTab.Screen name="Favorites" component={Favorites} options={favOptions} />
             <ButtomTab.Screen name="About" component={About} options={aboutOptions} />
@@ -35,7 +47,10 @@ export function Navigator() {
 const handlePressRouter = () => {
     playSound();
 };
-
+const deletedHeader = {
+    headerShown: false,
+    presentation: 'modal',
+};
 const homeOptions = {
     tabBarLabel: 'Home',
     tabBarIcon: ({ color, size }) => (

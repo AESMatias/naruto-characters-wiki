@@ -2,6 +2,7 @@ import react from 'react';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Home } from '../views/Home.jsx';
 import { About } from '../views/About.jsx';
 import { SearchBy } from '../views/SearchBy.jsx';
@@ -13,45 +14,79 @@ import { FontAwesome } from '@expo/vector-icons';
 import { playSound } from '../utils/tapSound.jsx'
 import { MaterialIcons } from '@expo/vector-icons';
 import { CharDetails } from '../views/CharDetails.jsx';
+import { Updates } from '../views/Updates.jsx';
+
+
+
+// const handlePressRouter = () => {
+//     playSound();
+// };
 
 const ButtomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
+// Drawer
+const Drawer = createDrawerNavigator();
+// Navigator
+
+function DrawerGroup() {
+    return (
+        <Drawer.Navigator>
+            <Drawer.Screen name="Home" component={StackGroup} options={drawer} />
+            <Drawer.Screen name="Updates" component={Updates} options={drawer} />
+            {/* <Drawer.Screen name="Home" component={ButtomTabGroup} />
+            <Drawer.Screen name="Search By" component={SearchBy} />
+            <Drawer.Screen name="Favorites" component={Favorites} />
+            <Drawer.Screen name="About" component={About} /> */}
+        </Drawer.Navigator>
+    );
+}
+
+// StackGroup
 function StackGroup() {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="Home" component={Home} options={deletedHeader} />
+            <Stack.Screen name="Home" component={ButtomTabGroup} options={deletedHeader} />
             <Stack.Screen name="CharDetails" component={CharDetails} options={deletedHeader} />
         </Stack.Navigator>
     );
 }
-
+// ButtomTabGroup
 function ButtomTabGroup() {
     return (
         <ButtomTab.Navigator>
-            <ButtomTab.Screen name="Naruto Characters!" component={StackGroup} options={homeOptions} />
+            <ButtomTab.Screen name="Naruto Characters!" component={Home} options={homeOptions} />
             <ButtomTab.Screen name="Search By" component={SearchBy} options={searchByOptions} />
             <ButtomTab.Screen name="Favorites" component={Favorites} options={favOptions} />
             <ButtomTab.Screen name="About" component={About} options={aboutOptions} />
         </ButtomTab.Navigator>
     );
 }
-
+// Navigator
 export function Navigator() {
     return (
         <NavigationContainer>
-            <ButtomTabGroup />
+            {/* <ButtomTabGroup /> */}
+            {/* <StackGroup /> */}
+            <DrawerGroup />
         </NavigationContainer>
     );
 }
-const handlePressRouter = () => {
-    playSound();
+
+const drawer = {
+    headerShown: false,
 };
 const deletedHeader = {
     headerShown: false,
     presentation: 'modal',
 };
+
 const homeOptions = {
+    headerLeft: () => (
+        <TouchableOpacity onPress={() => navigation.openDrawer()}>
+            <FontAwesome name="bars" size={30} color="white" style={{ marginLeft: 10 }} />
+        </TouchableOpacity>
+    ),
     tabBarLabel: 'Home',
     tabBarIcon: ({ color, size }) => (
         <MaterialCommunityIcons name="shuriken" size={35} color={color} />
@@ -67,7 +102,7 @@ const homeOptions = {
         borderBottomWidth: 0.5, // Header bottom border width
         borderBottomColor: 'white', // Header bottom border color
         elevation: 0, // Header elevation in Android (to avoid shadow)
-        height: 60,
+        height: 70,
     },
     headerTitleStyle: {
         fontWeight: 'bold', // Header title font weight
@@ -107,7 +142,7 @@ const favOptions = {
         borderBottomWidth: 0.5, // Header bottom border width
         borderBottomColor: 'white', // Header bottom border color
         elevation: 0, // Header elevation in Android (to avoid shadow)
-        height: 60,
+        height: 70,
     },
     headerTintColor: 'red',
     headerTitleStyle: {
@@ -146,7 +181,7 @@ const searchByOptions = {
         borderBottomWidth: 0.5, // Header bottom border width
         borderBottomColor: 'white', // Header bottom border color
         elevation: 0, // Header elevation in Android (to avoid shadow)
-        height: 60,
+        height: 70,
     },
     headerTintColor: 'red',
     headerTitleStyle: {
@@ -188,7 +223,7 @@ const aboutOptions = {
         borderBottomWidth: 0.5, // Header bottom border width
         borderBottomColor: 'white', // Header bottom border color
         elevation: 0, // Header elevation in Android (to avoid shadow)
-        height: 60,
+        height: 70,
     },
     headerTintColor: 'red',
     headerTitleStyle: {

@@ -75,7 +75,7 @@ export const Home = () => {
                     showsVerticalScrollIndicator={false}
                 />
             </View>
-            {/* <WriteNameComponent setdataFetched={setdataFetched} onChangeText={onChangeText} text={text} /> */}
+            <WriteNameComponent setdataFetched={setdataFetched} onChangeText={onChangeText} text={text} />
         </SafeAreaView>
     )
 

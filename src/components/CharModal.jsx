@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { React, useState } from 'react'
 import { TouchableOpacity } from 'react-native'
 import { AntDesign } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
@@ -11,25 +11,36 @@ export const CharModal = ({ charData, setcharModal }) => {
 
     const { navigate } = useNavigation();
 
+    const [imageError, setImageError] = useState(false);
+
+    const handleImageError = () => {
+        setImageError(true);
+        console.log(' Error at loading the image', charData.images[0], imageError);
+    }
 
     handleOnPress = () => {
         charDataView = charData;
         console.log('LA DATRA ES ', charData, { charDataView });
         navigate('CharDetails', { charDataView });
         playSound();
-
         setcharModal(false)
 
     }
 
-
     let returnedValue = charData ? (
         <View style={styles.general_container}>
             <View style={styles.container}>
-                <Image
-                    style={styles.image}
-                    source={{ uri: `${charData.images[0]}` }}
-                />
+
+                {imageError ? (
+                    <AntDesign name="questioncircle" size={55} color="white" style={styles.imageNotFound} />
+                ) : (
+                    <Image
+                        style={styles.image}
+                        source={{ uri: `${charData.images[0]}` }}
+                        onError={handleImageError}
+                    />
+                )}
+
                 <Text style={styles.text}>
                     {charData.name ?
                         charData.name
@@ -62,6 +73,18 @@ export const CharModal = ({ charData, setcharModal }) => {
 }
 
 const styles = StyleSheet.create({
+    imageNotFound: {
+        width: 100,
+        height: 100,
+        borderRadius: 10,
+        borderWidth: 1,
+        marginBottom: 5,
+        borderColor: 'white',
+        alignSelf: 'center',
+        alignContent: 'center',
+        justifyContent: 'center',
+        padding: 20,
+    },
     shuriken: {
         flex: 1,
         alignSelf: 'center',

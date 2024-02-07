@@ -1,21 +1,38 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import { React, useState } from 'react'
+import { AntDesign } from '@expo/vector-icons';
 
 export const Character = ({ charData, setcharModal, setFilledModal, FilledModal, ...props }) => {
 
     const handlePress = () => {
         setcharModal(true);
         setFilledModal(prevObject => ({ ...prevObject, ...charData }));
+        console.log(charData.images[0]);
         // We fill the modal with the character data
     }
+    const [imageError, setImageError] = useState(false);
+
+    const handleImageError = () => {
+        setImageError(true);
+        console.log(' Error at loading the image', charData.images[0], imageError);
+    }
+
     return (
         <TouchableOpacity onPress={() => handlePress()}>
             <View style={styles.general_container}>
                 <View style={styles.container}>
-                    <Image
-                        style={styles.image}
-                        source={{ uri: `${charData.images[0]}` }}
-                    />
+
+                    {imageError ? (
+                        <AntDesign name="questioncircle" size={55}
+                            color="white" style={styles.imageNotFound} />
+                    ) : (
+                        <Image
+                            style={styles.image}
+                            source={{ uri: `${charData.images[0]}` }}
+                            onError={handleImageError}
+                        />
+                    )}
+
                     <Text style={styles.text}>{charData.name}</Text>
                 </View>
                 {/* <View styles={styles.container_info}> */}
@@ -78,5 +95,17 @@ const styles = StyleSheet.create({
         borderColor: 'black',
         alignSelf: 'center',
 
-    }
+    },
+    imageNotFound: {
+        width: 100,
+        height: 100,
+        borderRadius: 10,
+        borderWidth: 1,
+        marginBottom: 5,
+        borderColor: 'white',
+        alignSelf: 'center',
+        alignContent: 'center',
+        justifyContent: 'center',
+        padding: 20,
+    },
 })

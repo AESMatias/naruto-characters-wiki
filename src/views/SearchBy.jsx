@@ -1,16 +1,53 @@
 import {
     StyleSheet, Text, View, Pressable, Button, Alert, Share, Linking
 } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Modal } from '../components/Modal.jsx'
 import { useState } from 'react'
 import { FontAwesome } from '@expo/vector-icons';
 
 export const SearchBy = () => {
 
+    const [progress, setProgress] = useState(0);
+    let timer;
+
+    const handlePressIn = () => {
+        clearInterval(timer);
+        setProgress(0);
+        timer = setInterval(() => {
+            setProgress(prevProgress => prevProgress + 1);
+        }, 100);
+    };
+
+    const handlePressOut = () => {
+        clearInterval(timer);
+        setProgress(0);
+        console.log(' SOLTADOOOOOOOOOOOOOOOOOOOOO')
+    };
+
     return (
         <View style={styles.background}>
             <Text style={styles.text}>SEARCH BY</Text>
+            {//texto que aparece si se presiono 3s o mas el boton de presionar
+                progress >= 100 ? <Text style={styles.text}>Pressed for {progress} seconds</Text> : null
+            }
+            <Pressable
+                onPressIn={handlePressIn}
+                onPressOut={handlePressOut}
+                style={({ pressed }) => [
+                    {
+                        opacity: pressed ? 0.5 : 1.0,
+                        backgroundColor: pressed ? 'blue' : 'gray',
+                        width: 200,
+                        height: 50,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    },
+                ]}
+            // onPress={() => console.log('Pressed')}
+            >
+
+            </Pressable>
 
         </View>
     )

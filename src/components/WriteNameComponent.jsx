@@ -1,11 +1,13 @@
 import { View, Text, StyleSheet, TextInput, Pressable } from 'react-native'
 import React from 'react'
 import { searchByName } from './Fetching';
+import { playSound } from '../utils/tapSound';
 
 export const WriteNameComponent = ({ setdataFetched, onChangeText, text }) => {
     const handleFetch = async () => {
         const nameSearched = await searchByName(text);
         setdataFetched(nameSearched);
+        playSound();
 
         // arrayOfCharacters.then((data) => {
         //     console.log('data', data);
@@ -46,7 +48,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     input: {
-        height: 40,
+        height: 30,
         margin: 2,
         borderWidth: 1,
         width: '90%',
@@ -81,5 +83,6 @@ const styles = StyleSheet.create({
         textShadowColor: 'black',
         textShadowOffset: { width: 2, height: 2 },
         textShadowRadius: 6,
+        minHeight: 30,
     }
 });

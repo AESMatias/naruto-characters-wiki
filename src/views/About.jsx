@@ -6,6 +6,7 @@ import { Modal } from '../components/Modal.jsx'
 import { useState } from 'react'
 import { FontAwesome } from '@expo/vector-icons';
 import { openURL } from '../utils/openURL'
+import { useSelector } from 'react-redux';
 
 export const About = () => {
 
@@ -42,8 +43,11 @@ export const About = () => {
         }
     };
 
+    const { currentUser } = useSelector((state) => state.userReducer);
+
     return (
         <View style={styles.background}>
+            <Text style={styles.text}>Hello {currentUser ? currentUser : `Anonymous`}</Text>
             <Text style={styles.text}>Made by Wholeheartedly</Text>
 
             <View style={styles.container}>

@@ -88,8 +88,7 @@ const styles = StyleSheet.create({
         width: '100%',
         marginBottom: 0,
         backgroundColor: '#fff',
-        backgroundColor: 'rgba(10,30,60,1)',
-        borderWidth: 1,
+        backgroundColor: 'rgba(10,30,70,0.2)',
     },
     container: {
 
@@ -97,12 +96,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'rgba(0,0,0,0.9)',
-    },
-    modal_background: {
-        flex: 1,
-        alignItems: 'center',
-        alignContent: 'center',
-        justifyContent: 'center',
+        backgroundColor: 'rgba(0,0,0,0.95)',
     },
 })

@@ -1,5 +1,5 @@
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native'
-import React, { useLayoutEffect } from 'react'
+import React, { useLayoutEffect, useState } from 'react'
 import { TouchableOpacity, FlatList } from 'react-native'
 import { AntDesign } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
@@ -8,12 +8,20 @@ import { playSound } from '../utils/tapSound.jsx'
 import { useRoute } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
+import { globalStyles } from '../styles/styles.jsx';
 
 export const CharDetails = ({ charData, ...props }) => {
+
+    const [imageError, setImageError] = useState(false);
 
     useLayoutEffect(() => {
         console.log('UseLayoutEffect at CharDetails.sx for the data character object: ', charDataView)
     }, [props.navigation]);
+
+    const handleImageError = () => {
+        setImageError(true);
+        console.log(' Error at loading the image', charDataView.images[0], imageError);
+    }
 
     const { params: { charDataView } } = useRoute();
 
@@ -22,10 +30,19 @@ export const CharDetails = ({ charData, ...props }) => {
             <ScrollView contentContainerStyle={{ flexGrow: 1 }} style={styles.container}>
                 <View style={styles.container_inside}>
                     <View style={styles.containerImages}>
-                        <Image
-                            style={styles.image}
-                            source={{ uri: `${charDataView.images[0]}` }}
-                        />
+
+                        {imageError ? (
+                            <AntDesign name="questioncircle" size={55}
+                                color="white" style={globalStyles.imageNotFound} />
+                        ) : (
+                            <Image
+                                style={styles.image}
+                                source={{ uri: `${charDataView.images[0]}` }}
+                                onError={handleImageError}
+                            />
+                        )}
+
+
                         {(charDataView.images[1]) ?
                             <Image
                                 style={styles.image}

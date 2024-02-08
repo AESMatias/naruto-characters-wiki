@@ -1,7 +1,8 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { React, useState } from 'react'
 import { AntDesign } from '@expo/vector-icons';
-
+import { globalStyles } from '../styles/styles';
+import { BlurView } from 'expo-blur';
 export const Character = ({ charData, setcharModal, setFilledModal, FilledModal, ...props }) => {
 
     const handlePress = () => {
@@ -23,7 +24,7 @@ export const Character = ({ charData, setcharModal, setFilledModal, FilledModal,
                 <View style={styles.container}>
 
                     {imageError ? (
-                        <AntDesign name="questioncircle" size={55}
+                        <AntDesign name="questioncircle" size={30}
                             color="white" style={styles.imageNotFound} />
                     ) : (
                         <Image
@@ -47,6 +48,18 @@ export const Character = ({ charData, setcharModal, setFilledModal, FilledModal,
 }
 
 const styles = StyleSheet.create({
+    imageNotFound: {
+        width: 70,
+        height: 70,
+        borderRadius: 10,
+        borderWidth: 1,
+        marginBottom: 5,
+        borderColor: 'white',
+        alignSelf: 'center',
+        alignContent: 'center',
+        justifyContent: 'center',
+        padding: 20,
+    },
     container_info: {
         flex: 1,
         borderWidth: 1,
@@ -74,38 +87,27 @@ const styles = StyleSheet.create({
 
     },
     text: {
-        color: 'black',
+        color: 'white',
         fontSize: 20,
         fontWeight: 'bold',
         backgroundColor: 'rgba(10, 200, 220, 1)',
         padding: 2,
         marginTop: 3,
-        borderRadius: 5,
+        borderRadius: 3,
         textShadowColor: 'black',
-        textShadowOffset: { width: 0.5, height: 0.5 },
-        textShadowRadius: 1,
+        textShadowOffset: { width: 1, height: 1 },
+        textShadowRadius: 5,
         textAlign: 'center',
         minWidth: '60%',
+        //ponle borde a las letras
     },
     image: {
         width: 70,
         height: 70,
         borderRadius: 15,
         borderWidth: 1,
-        borderColor: 'black',
-        alignSelf: 'center',
-
-    },
-    imageNotFound: {
-        width: 100,
-        height: 100,
-        borderRadius: 10,
-        borderWidth: 1,
-        marginBottom: 5,
         borderColor: 'white',
         alignSelf: 'center',
-        alignContent: 'center',
-        justifyContent: 'center',
-        padding: 20,
-    },
+
+    }
 })

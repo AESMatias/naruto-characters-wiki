@@ -6,6 +6,8 @@ import { Entypo } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { playSound } from '../utils/tapSound.jsx'
 import { useNavigation } from '@react-navigation/native';
+import { globalStyles } from '../styles/styles.jsx';
+import { BlurView } from 'expo-blur';
 
 export const CharModal = ({ charData, setcharModal }) => {
 
@@ -32,7 +34,7 @@ export const CharModal = ({ charData, setcharModal }) => {
             <View style={styles.container}>
 
                 {imageError ? (
-                    <AntDesign name="questioncircle" size={55} color="white" style={styles.imageNotFound} />
+                    <AntDesign name="questioncircle" size={55} color="white" style={globalStyles.imageNotFound} />
                 ) : (
                     <Image
                         style={styles.image}
@@ -73,18 +75,6 @@ export const CharModal = ({ charData, setcharModal }) => {
 }
 
 const styles = StyleSheet.create({
-    imageNotFound: {
-        width: 100,
-        height: 100,
-        borderRadius: 10,
-        borderWidth: 1,
-        marginBottom: 5,
-        borderColor: 'white',
-        alignSelf: 'center',
-        alignContent: 'center',
-        justifyContent: 'center',
-        padding: 20,
-    },
     shuriken: {
         flex: 1,
         alignSelf: 'center',

@@ -66,19 +66,18 @@ export const Modal = ({ isModalOpen, withInput, children, ...props }) => {
 
 const styles = StyleSheet.create({
     modalContent: {
-        flex: 8 / 12,
+        flex: 7 / 12,
         flexDirection: 'column',
         alignSelf: 'center',
         justifyContent: 'center',
         alignItems: 'stretch',
-        backgroundColor: 'rgba(5, 10, 30, 1)',// 'rgba(20, 90, 200, 0.25)',
-        borderColor: 'blue',
+        backgroundColor: 'rgba(5, 10, 30, 1)',
+        borderColor: 'rgba(255, 255, 255, 0.5)',
         borderWidth: 0.5,
-        borderRadius: 25,
-
+        borderRadius: 10,
         paddingVertical: 200,
-        width: '90%',
-        marginTop: 100,
+        width: '92%',
+        marginTop: 120,
 
     },
     text: {
@@ -91,7 +90,7 @@ const styles = StyleSheet.create({
         padding: 10,
         borderColor: 'white',
         borderRadius: 25,
-        borderWidth: 2,
+        borderWidth: 1,
         marginTop: 10,
         width: '75%',
         maxWidth: 1000,

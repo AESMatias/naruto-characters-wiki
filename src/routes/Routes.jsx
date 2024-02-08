@@ -7,7 +7,7 @@ import { Home } from '../views/Home.jsx';
 import { About } from '../views/About.jsx';
 import { SearchBy } from '../views/SearchBy.jsx';
 import { Favorites } from '../views/Favorites.jsx';
-import { SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
@@ -15,6 +15,7 @@ import { playSound } from '../utils/tapSound.jsx'
 import { MaterialIcons } from '@expo/vector-icons';
 import { CharDetails } from '../views/CharDetails.jsx';
 import { Updates } from '../views/Updates.jsx';
+import { MyAccount } from '../views/MyAccount.jsx';
 
 
 
@@ -34,6 +35,7 @@ function DrawerGroup() {
         <Drawer.Navigator>
             <Drawer.Screen name="Home" component={StackGroup} options={drawer} />
             <Drawer.Screen name="Updates" component={Updates} options={drawer} />
+            <Drawer.Screen name="My Account" component={MyAccount} options={drawer} />
             {/* <Drawer.Screen name="Home" component={ButtomTabGroup} />
             <Drawer.Screen name="Search By" component={SearchBy} />
             <Drawer.Screen name="Favorites" component={Favorites} />

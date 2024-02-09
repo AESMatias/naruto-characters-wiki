@@ -3,9 +3,12 @@ import { View, StyleSheet, FlatList, SafeAreaView, Text } from 'react-native';
 import { WriteNameComponent } from '../components/WriteNameComponent.jsx';
 import { useEffect, useState } from 'react';
 import { Character } from '../components/Character.jsx';
-import { loadData } from '../utils/fetchCharsData.jsx'
+import { loadData } from '../utils/handleData.jsx'
 import { CharModal } from '../components/CharModal.jsx'
 import { Modal } from '../components/Modal.jsx'
+import { useDispatch, useSelector } from 'react-redux';
+import { addToFavorites } from '../store/slices/AccountSlice.jsx';
+
 
 export const Home = () => {
 
@@ -14,6 +17,7 @@ export const Home = () => {
     const [text, onChangeText] = useState(""); // For the input field for searching by name
     const [charModal, setcharModal] = useState(false) // The modal for every character
     const [FilledModal, setFilledModal] = useState({}) // The modal object of every character
+    const [favoritesTemp, setFavoritesTemp] = useState([])
 
     useEffect(() => {
 
@@ -32,26 +36,44 @@ export const Home = () => {
         }
     }, [text])
 
+    const dispatch = useDispatch();
+    const { favorites } = useSelector(state => state.userReducer);
+
+
+    // const handleAddFav = () => {
+    //     playSound();
+    //     try {
+    //         dispatch(addToFavorites(charData));
+    //         toStoreFavChar(charData);
+    //         console.log('Add to favorites:', charData);
+    //         console.log('Favorites:', favorites[0]);
+    //         // FavoritesLengthUpdater(dispatch);
+
+    //     } catch (error) {
+    //         console.log('Error adding to favorites in dispatch at charModal.jsx', error);
+    //     }
+
+    // }
+
     useEffect(() => {
-        loadData(setdataFetched);
+        console.log('FAVORITES AAAAAAAAAAAAAAAAAAAA', favoritesTemp);
+        favoritesTemp.forEach((char) => {
+            dispatch(addToFavorites(char));
+            console.log('Add to favorites:', char);
+            console.log('222222:', favorites);
+        });
+
+    }, [favoritesTemp]);
+
+    useEffect(() => {
+        loadData(setdataFetched, setFavoritesTemp);
+
     }, []); // Started when the component is mounted
-
-    useEffect(() => {
-        // console.log('useEffect> ', dataFetched);
-    }, [dataFetched]); // Observe changes in dataFetched
-
-    useEffect(() => {
-        onChangeText('');
-        return () => {
-            setRefreshing(false);
-            loadData(setdataFetched);
-        }
-    }, [refreshing]); // Observe changes in the refresing state
 
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar style="auto" />
-            <Modal id='modal_id' isModalOpen={charModal}
+            <Modal id='modal_id' isModalOpen={charModal} favoritesTemp={favoritesTemp} setFavoritesTemp={setFavoritesTemp}
                 withInput
                 FilledModal={[FilledModal]}
                 onRequestClose={() => setcharModal(false)}>

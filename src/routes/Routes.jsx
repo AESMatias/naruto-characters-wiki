@@ -16,56 +16,113 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { CharDetails } from '../views/CharDetails.jsx';
 import { Updates } from '../views/Updates.jsx';
 import { MyAccount } from '../views/MyAccount.jsx';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { retrieveData } from '../utils/handleData.jsx';
+import { incrementCounterFavorites } from '../store/slices/AccountSlice.jsx';
+import { updateFavoritesLength } from '../utils/handleData.jsx';
+import { useDispatch } from 'react-redux';
+import { useState } from 'react';
 
-
-
-// const handlePressRouter = () => {
-//     playSound();
-// };
-
-const ButtomTab = createBottomTabNavigator();
-const Stack = createNativeStackNavigator();
-
-// Drawer
-const Drawer = createDrawerNavigator();
-// Navigator
-
-function DrawerGroup() {
-    return (
-        <Drawer.Navigator>
-            <Drawer.Screen name="Home" component={StackGroup} options={drawer} />
-            <Drawer.Screen name="Updates" component={Updates} options={drawer} />
-            <Drawer.Screen name="My Account" component={MyAccount} options={drawer} />
-            {/* <Drawer.Screen name="Home" component={ButtomTabGroup} />
-            <Drawer.Screen name="Search By" component={SearchBy} />
-            <Drawer.Screen name="Favorites" component={Favorites} />
-            <Drawer.Screen name="About" component={About} /> */}
-        </Drawer.Navigator>
-    );
-}
-
-// StackGroup
-function StackGroup() {
-    return (
-        <Stack.Navigator>
-            <Stack.Screen name="Home" component={ButtomTabGroup} options={deletedHeader} />
-            <Stack.Screen name="CharDetails" component={CharDetails} options={deletedHeader} />
-        </Stack.Navigator>
-    );
-}
-// ButtomTabGroup
-function ButtomTabGroup() {
-    return (
-        <ButtomTab.Navigator>
-            <ButtomTab.Screen name="Naruto Characters!" component={Home} options={homeOptions} />
-            <ButtomTab.Screen name="Search By" component={SearchBy} options={searchByOptions} />
-            <ButtomTab.Screen name="Favorites" component={Favorites} options={favOptions} />
-            <ButtomTab.Screen name="About" component={About} options={aboutOptions} />
-        </ButtomTab.Navigator>
-    );
-}
 // Navigator
 export function Navigator() {
+
+    dispatch = useDispatch();
+
+    const [favCounter, setFavCounter] = useState(0)
+
+
+
+    const favOptions = {
+        tabBarLabel: 'Favorites',
+        tabBarIcon: ({ color, size }) => (
+            <AntDesign name="star" size={24} color={color} />
+        ),
+        tabBarStyle: {
+            backgroundColor: 'rgba(20,20,25,1)',
+            borderTopWidth: 1.5,
+            borderTopColor: 'white',
+            height: 50,
+        },
+        tabBarBadge: favCounter,
+        tabBarBadgeStyle: { fontSize: 9, width: 20, height: 20, borderRadius: 10, backgroundColor: 'red' },
+
+        headerStyle: {
+            backgroundColor: 'rgba(16,41,78,1)', // Header background color
+            borderBottomWidth: 0.5, // Header bottom border width
+            borderBottomColor: 'white', // Header bottom border color
+            elevation: 0, // Header elevation in Android (to avoid shadow)
+            height: 0,
+        },
+        headerTintColor: 'red',
+        headerTitleStyle: {
+            fontWeight: 'bold', // Header title font weight
+            color: 'white', // Header title text color
+            fontSize: 15, // Header title font size
+            maxWidth: '100%', // Maximum width for the header title
+            textAlign: 'center', // Horizontal alignment of header title
+            textShadowColor: 'black', // Header title text shadow color
+            textShadowOffset: { width: 0.7, height: 0.7 }, // Header title text shadow offset
+            textShadowRadius: 2, // Header title text shadow radius
+
+        },
+        headerTitleAlign: 'center', // Horizontal alignment of header title
+        headerTitleContainerStyle: {
+            flex: 1, // Expand title container to occupy all available space
+            alignItems: 'center', // Align title horizontally in center
+            justifyContent: 'center', // Align title vertically in center
+        },
+        headerTransitionStyle: 'screen', // Header transition style (screen, fade, slide)
+    };
+
+
+
+    // DrawerGroup
+    const Drawer = createDrawerNavigator();
+    function DrawerGroup() {
+        return (
+            <Drawer.Navigator screenOptions={{
+                drawerIcon: ({ focused, color, size }) => (
+                    <TouchableOpacity>
+                        <AntDesign name="menu-fold" size={15} color={color} />
+                    </TouchableOpacity>
+                ),
+            }}>
+                <Drawer.Screen name="Home" component={StackGroup} options={drawer} />
+                <Drawer.Screen name="Updates" component={Updates} options={drawer} />
+                <Drawer.Screen name="My Account" component={MyAccount} options={drawer} />
+                {/* <Drawer.Screen name="Home" component={ButtomTabGroup} />
+                <Drawer.Screen name="Search By" component={SearchBy} />
+                <Drawer.Screen name="Favorites" component={Favorites} />
+                <Drawer.Screen name="About" component={About} /> */}
+            </Drawer.Navigator>
+        );
+    }
+
+    // StackGroup
+    const Stack = createNativeStackNavigator();
+    function StackGroup() {
+        return (
+            <Stack.Navigator>
+                <Stack.Screen name="Home" component={ButtomTabGroup} options={deletedHeader} />
+                <Stack.Screen name="CharDetails" component={CharDetails} options={deletedHeader} />
+            </Stack.Navigator>
+        );
+    }
+    // ButtomTabGroup
+    const ButtomTab = createBottomTabNavigator();
+    function ButtomTabGroup() {
+        return (
+            <ButtomTab.Navigator>
+                <ButtomTab.Screen name="Naruto Characters!" component={Home} options={homeOptions} />
+                <ButtomTab.Screen name="Search By" component={SearchBy} options={searchByOptions} />
+                <ButtomTab.Screen name="Favorites" component={Favorites} options={favOptions} />
+                <ButtomTab.Screen name="About" component={About} options={aboutOptions} />
+            </ButtomTab.Navigator>
+        );
+    }
+
+    updateFavoritesLength(incrementCounterFavorites, setFavCounter);
+
     return (
         <NavigationContainer>
             {/* <ButtomTabGroup /> */}
@@ -76,19 +133,51 @@ export function Navigator() {
 }
 
 const drawer = {
-    headerShown: false,
+    headerShown: true, // Show the header
+    headerTitleAlign: 'center', // Align the header title to center
+    headerTitleStyle: {
+        color: 'white', // Change the color of the letters
+        fontSize: 15, // Change the font size if necessary
+        fontFamily: 'Arial',
+        fontWeight: 'bold',
+    },
+    headerStyle: {
+        backgroundColor: '#141419',
+    },
+    drawerStyle: {
+        backgroundColor: 'rgba(5, 15, 25, 1)',
+        width: 250,
+        paddingTop: '80%', // Adjust space from the top of the screen
+    },
+    drawerType: 'front', // Type of Drawer (front)
+    drawerWidth: 200, // Width of the Drawer
+    // drawerBackgroundColor: 'rgba(20, 20, 25, 0.8)', // Drawer background color
+    overlayColor: 'rgba(0, 0, 0, 0.85)', // Color of overlay when opening the Drawer
+    minSwipeDistance: 50, // Minimum swipe distance to open the Drawer
+    drawerLockMode: 'unlocked', // Drawer lock mode ('locked-closed', 'locked-open', 'unlocked')
+    hideStatusBar: false, // Hide status bar when opening the Drawer
+    statusBarAnimation: 'fade', // Status bar animation when opening the Drawer
+    swipeEdgeWidth: 150, // Width of the activation area of the Drawer when swiping from the edge
+    drawerLabelStyle: {
+        color: 'white', // Change the color of the letters
+        fontSize: 20, // Change the font size if necessary
+        fontFamily: 'Arial',
+        fontWeight: 'bold',
+    },
 };
+
 const deletedHeader = {
     headerShown: false,
     presentation: 'modal',
 };
 
 const homeOptions = {
-    headerLeft: () => (
-        <TouchableOpacity onPress={() => navigation.openDrawer()}>
-            <FontAwesome name="bars" size={30} color="white" style={{ marginLeft: 10 }} />
-        </TouchableOpacity>
-    ),
+
+    // headerLeft: () => (
+    //     <TouchableOpacity onPress={() => navigation.openDrawer()}>
+    //         <FontAwesome name="bars" size={30} color="white" style={{ marginLeft: 10 }} />
+    //     </TouchableOpacity>
+    // ),
     tabBarLabel: 'Home',
     tabBarIcon: ({ color, size }) => (
         <MaterialCommunityIcons name="shuriken" size={35} color={color} />
@@ -104,53 +193,12 @@ const homeOptions = {
         borderBottomWidth: 0.5, // Header bottom border width
         borderBottomColor: 'white', // Header bottom border color
         elevation: 0, // Header elevation in Android (to avoid shadow)
-        height: 70,
+        height: 0,
     },
     headerTitleStyle: {
         fontWeight: 'bold', // Header title font weight
         color: 'white', // Header title text color
         fontSize: 14, // Header title font size
-        maxWidth: '100%', // Maximum width for the header title
-        textAlign: 'center', // Horizontal alignment of header title
-        textShadowColor: 'black', // Header title text shadow color
-        textShadowOffset: { width: 0.7, height: 0.7 }, // Header title text shadow offset
-        textShadowRadius: 2, // Header title text shadow radius
-
-    },
-    headerTitleAlign: 'center', // Horizontal alignment of header title
-    headerTitleContainerStyle: {
-        flex: 1, // Expand title container to occupy all available space
-        alignItems: 'center', // Align title horizontally in center
-        justifyContent: 'center', // Align title vertically in center
-    },
-    headerTransitionStyle: 'screen', // Header transition style (screen, fade, slide)
-};
-const favOptions = {
-    tabBarLabel: 'Favorites',
-    tabBarIcon: ({ color, size }) => (
-        <AntDesign name="star" size={24} color={color} />
-    ),
-    tabBarStyle: {
-        backgroundColor: 'rgba(20,20,25,1)',
-        borderTopWidth: 1.5,
-        borderTopColor: 'white',
-        height: 50,
-    },
-    tabBarBadge: 0,
-    tabBarBadgeStyle: { fontSize: 11, width: 15, height: 15, borderRadius: 20, backgroundColor: 'red' },
-
-    headerStyle: {
-        backgroundColor: 'rgba(16,41,78,1)', // Header background color
-        borderBottomWidth: 0.5, // Header bottom border width
-        borderBottomColor: 'white', // Header bottom border color
-        elevation: 0, // Header elevation in Android (to avoid shadow)
-        height: 70,
-    },
-    headerTintColor: 'red',
-    headerTitleStyle: {
-        fontWeight: 'bold', // Header title font weight
-        color: 'white', // Header title text color
-        fontSize: 15, // Header title font size
         maxWidth: '100%', // Maximum width for the header title
         textAlign: 'center', // Horizontal alignment of header title
         textShadowColor: 'black', // Header title text shadow color
@@ -183,7 +231,7 @@ const searchByOptions = {
         borderBottomWidth: 0.5, // Header bottom border width
         borderBottomColor: 'white', // Header bottom border color
         elevation: 0, // Header elevation in Android (to avoid shadow)
-        height: 70,
+        height: 0,
     },
     headerTintColor: 'red',
     headerTitleStyle: {
@@ -218,14 +266,14 @@ const aboutOptions = {
         height: 50,
     },
     tabBarBadge: 1,
-    tabBarBadgeStyle: { fontSize: 11, width: 15, height: 15, borderRadius: 20, backgroundColor: '#FF8528' },
+    tabBarBadgeStyle: { fontSize: 11, width: 20, height: 20, borderRadius: 10, backgroundColor: '#FF8528' },
 
     headerStyle: {
         backgroundColor: 'rgba(16,41,78,1)', // Header background color
         borderBottomWidth: 0.5, // Header bottom border width
         borderBottomColor: 'white', // Header bottom border color
         elevation: 0, // Header elevation in Android (to avoid shadow)
-        height: 70,
+        height: 0,
     },
     headerTintColor: 'red',
     headerTitleStyle: {

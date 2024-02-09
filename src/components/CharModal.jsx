@@ -8,8 +8,12 @@ import { playSound } from '../utils/tapSound.jsx'
 import { useNavigation } from '@react-navigation/native';
 import { globalStyles } from '../styles/styles.jsx';
 import { BlurView } from 'expo-blur';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToFavorites, removeFromFavorites } from '../store/slices/AccountSlice.jsx';
+import { toStoreFavChar } from '../utils/handleData.jsx';
 
-export const CharModal = ({ charData, setcharModal }) => {
+
+export const CharModal = ({ charData, setcharModal, favoritesTemp, setFavoritesTemp }) => {
 
     const { navigate } = useNavigation();
 
@@ -26,6 +30,24 @@ export const CharModal = ({ charData, setcharModal }) => {
         navigate('CharDetails', { charDataView });
         playSound();
         setcharModal(false)
+    }
+
+    const dispatch = useDispatch();
+    const { favorites } = useSelector(state => state.userReducer);
+    const { currentUser } = useSelector((state) => state.userReducer);
+
+    const handleAddFav = () => {
+        playSound();
+        try {
+            dispatch(addToFavorites(charData)); //TODO: Fix this
+            toStoreFavChar(charData);
+            console.log('Add to favorites:', charData);
+            console.log('Favorites:', favorites[0]);
+            // FavoritesLengthUpdater(dispatch);
+        } catch (error) {
+            console.log('Error adding to favorites in dispatch at charModal.jsx', error);
+        }
+        // we use removeFromFavorites only if we want to remove the character from the favorites
 
     }
 
@@ -56,10 +78,17 @@ export const CharModal = ({ charData, setcharModal }) => {
                     <Text style={styles.text_more}>View more info  {
                         <Entypo name="info-with-circle" size={17} color="white" />}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={playSound}>
-                    <Text style={styles.text_favorite}>Add to favorites  {
-                        <AntDesign name="star" size={16} color="white" />}</Text>
-                </TouchableOpacity>
+
+
+                {favorites ?
+                    <TouchableOpacity onPress={handleAddFav}>
+                        <Text style={styles.text_favorite}>Add to favorites  {
+                            <AntDesign name="star" size={16} color="white" />}</Text>
+                    </TouchableOpacity> : <Text>ERROR</Text>}
+
+                {favoritesTemp}
+
+
                 {/* <MaterialCommunityIcons name="shuriken" size={30} color="white" style={styles.shuriken} /> */}
             </View>
             <View styles={styles.container_info}>

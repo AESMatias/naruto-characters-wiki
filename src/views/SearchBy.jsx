@@ -22,33 +22,11 @@ export const SearchBy = () => {
     const handlePressOut = () => {
         clearInterval(timer);
         setProgress(0);
-        console.log(' SOLTADOOOOOOOOOOOOOOOOOOOOO')
     };
 
     return (
         <View style={styles.background}>
-            <Text style={styles.text}>SEARCH BY</Text>
-            {//texto que aparece si se presiono 3s o mas el boton de presionar
-                progress >= 100 ? <Text style={styles.text}>Pressed for {progress} seconds</Text> : null
-            }
-            <Pressable
-                onPressIn={handlePressIn}
-                onPressOut={handlePressOut}
-                style={({ pressed }) => [
-                    {
-                        opacity: pressed ? 0.5 : 1.0,
-                        backgroundColor: pressed ? 'blue' : 'gray',
-                        width: 200,
-                        height: 50,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                    },
-                ]}
-            // onPress={() => console.log('Pressed')}
-            >
-
-            </Pressable>
-
+            <Text style={styles.text}>Available in the next update</Text>
         </View>
     )
 }

@@ -3,25 +3,116 @@ import {
 } from 'react-native'
 import React from 'react'
 import { Modal } from '../components/Modal.jsx'
-import { useState } from 'react'
-import { FontAwesome } from '@expo/vector-icons';
+import { useState, useEffect } from 'react'
+import { CharModal } from '../components/CharModal.jsx';
+import { FlatList } from 'react-native';
+import { WriteNameComponent } from '../components/WriteNameComponent.jsx';
+import { loadData, retrieveData } from '../utils/handleData.jsx';
+import { Character } from '../components/Character.jsx';
 
 export const Favorites = () => {
 
-    return (
-        <View style={styles.background}>
-            <Text style={styles.text}>MY FAVORITES</Text>
+    const [refreshing, setRefreshing] = useState(false); // For the FlatList
+    const [dataFetched, setdataFetched] = useState([]);
+    const [text, onChangeText] = useState(""); // For the input field for searching by name
+    const [charModal, setcharModal] = useState(false) // The modal for every character
+    const [FilledModal, setFilledModal] = useState({}) // The modal object of every character
+    const [favorites, setFavorites] = useState([])
 
+    useEffect(() => {
+
+        // console.log('OBJECT CHANGED ', FilledModal)
+
+        return () => {
+            // console.log('OBJECT HAS BEEN CHANGED RETURNNNNNNNNNNN ', FilledModal)
+        }
+    }, [FilledModal]) // When some character is clicked, the object of the character is passed to the modal
+
+    useEffect(() => {
+        // console.log('text  ', text)
+
+        return () => {
+            // console.log('text changed return DESFASADO ANTERIOR ', text)
+        }
+    }, [text])
+
+    useEffect(() => {
+        // loadData(setdataFetched);
+        retrieveData().then((data) => {
+            // tiene una key asi que es un objeto, por lo que lo parseamos 
+            setFavorites(data);
+            console.log('FAVORITES RETRIEVssED', data);
+            console.log('RETRIEVssED 2222', favorites);
+        });
+
+
+    }, []); // Started when the component is mounted
+
+    useEffect(() => {
+        console.log('FAVORITES EFFECT', favorites);
+    }, [favorites]); // Observe changes in dataFetched
+
+    useEffect(() => {
+        onChangeText('');
+        return () => {
+            setRefreshing(false);
+            loadData(setdataFetched);
+        }
+    }, [refreshing]); // Observe changes in the refresing state
+
+    return (
+        <View style={styles.container}>
+
+            {/* {favorites.length > 0 ? <Text>favorites</Text> :
+                <Text>There are no favorites yet</Text>} */}
+
+            <Modal id='modal_id' isModalOpen={charModal}
+                withInput
+                FilledModal={[FilledModal]}
+                onRequestClose={() => setcharModal(false)}>
+                <CharModal charData={FilledModal} setcharModal={setcharModal} />
+                {/* <Text>INSIDE MODAL</Text> */}
+            </Modal>
+            <View style={styles.flat_container}>
+                <FlatList
+                    data={(favorites !== undefined) ?
+                        favorites : []
+                    }
+                    //parseamos lo de keystractor ya que es un objeto
+                    // keyExtractor={(item) => item.id.toString()}
+                    keyExtractor={(item) => (item.id.toString())}
+                    renderItem={({ item }) => <Character
+                        charData={item}
+                        setcharModal={setcharModal}
+                        setFilledModal={setFilledModal}
+                    />}
+                    style={styles.char_list}
+                    refreshing={refreshing}
+                    onRefresh={refreshing => setRefreshing(!refreshing)}
+                    showsVerticalScrollIndicator={false}
+                />
+            </View>
+            {/* <WriteNameComponent setdataFetched={setdataFetched} onChangeText={onChangeText} text={text} /> */}
         </View>
     )
-}
 
+}
 const styles = StyleSheet.create({
+    flat_container: {
+        flex: 1,
+        paddingTop: 10,
+        width: '100%',
+        marginBottom: 0,
+        backgroundColor: '#fff',
+        backgroundColor: 'rgba(10,30,70,0.2)',
+    },
     container: {
-        flex: 1 / 5,
-        flexDirection: 'row',
+
+        flex: 1,
+        backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
+        backgroundColor: 'rgba(0,0,0,0.95)',
     },
     containerButtons: {
         flex: 1 / 6,

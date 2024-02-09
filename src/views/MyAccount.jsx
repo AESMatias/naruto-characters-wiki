@@ -1,30 +1,15 @@
 import {
-    StyleSheet, Text, View, Pressable, Button, Alert, Share, Linking,
-    Image,
-    ScrollView,
-    TextInput, TouchableOpacity
+    StyleSheet, Text, View, Alert, Image, TextInput, TouchableOpacity
 } from 'react-native'
 import React from 'react'
-import { Modal } from '../components/Modal.jsx'
-import { useState, useEffect } from 'react'
-import { FontAwesome } from '@expo/vector-icons';
+import { useState } from 'react'
 import { BlurView } from 'expo-blur';
 import {
-    getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-    onAuthStateChanged, signOut
+    getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut
 } from 'firebase/auth';
-import { initializeApp } from 'firebase/app';
-import { firebaseConfig } from '../../firebaseConfig.js';
 import { app } from '../../firebaseConfig.js';
-import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
-import { initializeAuth, setPersistence, getReactNativePersistence } from 'firebase/auth';
-import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Importa AsyncStorage correctamente
-import { browserSessionPersistence } from "firebase/auth";
-import { isEmpty, size } from 'lodash';
-import firebase from 'firebase/compat/app';
 import 'firebase/firestore';
 import { useSelector, useDispatch } from 'react-redux';
 import { setUser, clearUser } from '../store/slices/AccountSlice.jsx';
@@ -34,7 +19,6 @@ const auth = getAuth(app);
 
 const LoggedScreen = () => {
     const { currentUser } = useSelector((state) => state.userReducer);
-    const dispatch = useDispatch();
     const navigation = useNavigation();
 
 
@@ -42,7 +26,7 @@ const LoggedScreen = () => {
     return (
         <View style={styles.background}>
             <Text style={styles.text}>MY ACCOUNT: {currentUser ? currentUser : 'Not Logged'}</Text>
-            <TouchableOpacity onPress={() => { handleLogOut(navigation, currentUser, dispatch) }}>
+            <TouchableOpacity onPress={() => { handleLogOut(navigation, currentUser) }}>
                 <Text style={styles.text}>Sign out</Text>
             </TouchableOpacity>
         </View>
@@ -72,12 +56,12 @@ const LoginScreen = () => {
 
     auth.onAuthStateChanged((user) => {
         if (user) {
-            navigation.navigate('Logged');
+            // navigation.navigate('Logged');
             setIsLogged(true);
         } else {
+            // navigation.navigate('Login');
             dispatch(clearUser());
             setIsLogged(false);
-            navigation.navigate('Login');
         }
     });
 
@@ -100,7 +84,7 @@ const LoginScreen = () => {
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const user = userCredential.user;
-                navigation.navigate('Logged');
+                // navigation.navigate('Logged');
                 dispatch(setUser(user.email)); // TODO:
                 console.log(currentUser + 'UserReducer')
             })
@@ -114,73 +98,93 @@ const LoginScreen = () => {
 
     return (
         < View style={styles.background} >
-            < Image source={require('../assets/logo.png')} style={[styles.image, StyleSheet.absoluteFill]} />
-            <View style={styles.backgroundObject}></View>
-            <ScrollView contentContainerStyle={{
+            {/* < Image source={require('../assets/logo.png')} style={[styles.image, StyleSheet.absoluteFill]} /> */}
+            {/* <View style={styles.backgroundObject}></View> */}
+            {/* <ScrollView contentContainerStyle={{
                 flex: 1,
-                width: '100%',
-                height: '100%',
                 alignItems: 'center',
                 justifyContent: 'center',
-            }}>
+                alignContent: 'center',
+            }}> */}
 
-                <BlurView intensity={90} tint='light'>
-                    <View style={styles.loginContainer}>
-                        {/* <Pressable onPress={() => { openURL('https://twitter.com/AESMatias') }}>
+            <BlurView intensity={90} tint='light' style={styles.BlurView}>
+                <View style={styles.loginContainer}>
+                    {/* <Pressable onPress={() => { openURL('https://twitter.com/AESMatias') }}>
                 <FontAwesome name="twitter-square" size={100} color={'white'} />
             </Pressable> */}
-                        <View style={styles.container_text}>
-                            <Image source={require('../assets/logo.png')} style={styles.profileImage} />
-                        </View>
-
-                        <View>
-                            <Text style={styles.text}>E-mail</Text>
-                            <TextInput onChangeText={text => setEmail(text)} style={styles.text} placeholder="Your e-mail" />
-                        </View>
-
-                        <View>
-                            <Text style={styles.text}>Password</Text>
-                            <TextInput onChangeText={text => setPassword(text)} style={styles.text} placeholder="Your password" secureTextEntry={true} />
-                        </View>
-
-                        <TouchableOpacity onPress={handleSignIn} style={[styles.button, { backgroundColor: '#00CFEB90' }]}>
-                            <Text style={{ fontSize: 17, fontWeight: '400', color: 'white' }}>Login</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={handleCreateAccount} style={[styles.button, { backgroundColor: '#6792F090' }]}>
-                            <Text style={{ fontSize: 17, fontWeight: '400', color: 'white' }}>Create Account</Text>
-                        </TouchableOpacity>
+                    <View style={styles.containerImage}>
+                        <Image source={require('../assets/logo.png')} style={styles.profileImage} />
                     </View>
-                </BlurView>
-            </ScrollView>
+
+                    <View>
+                        <Text style={styles.text}>E-mail</Text>
+                        <TextInput onChangeText={text => setEmail(text)} style={styles.input} placeholder="Your e-mail" />
+                    </View>
+
+                    <View>
+                        <Text style={styles.text}>Password</Text>
+                        <TextInput onChangeText={text => setPassword(text)} style={styles.input} placeholder="Your password" secureTextEntry={true} />
+                    </View>
+
+                    <TouchableOpacity onPress={handleSignIn} style={[styles.button, { backgroundColor: '#00CFEB90' }]}>
+                        <Text style={{ fontSize: 17, fontWeight: '400', color: 'white' }}>Login</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={handleCreateAccount} style={[styles.button, { backgroundColor: '#ec5578' }]}>
+                        <Text style={{ fontSize: 17, fontWeight: '400', color: 'white' }}>Create Account</Text>
+                    </TouchableOpacity>
+                </View>
+            </BlurView>
+            {/* </ScrollView> */}
         </View >)
 }
 
 
 export const MyAccount = () => {
     const { currentUser } = useSelector((state) => state.userReducer);
-
-    const handleSignIn = () => {
-        console.log('Sign in');
-    };
-
-    const handleCreateAccount = () => {
-        console.log('Create account');
-    };
-
     const Stack = createNativeStackNavigator();
 
     return (
         <Stack.Navigator>
             {currentUser ? (
-                <Stack.Screen name="Logged" component={LoggedScreen} />
-            ) : (
-                <Stack.Screen name="Login" component={LoginScreen} />
-            )}
+                <Stack.Screen name="Logged" component={LoggedScreen}
+                    options={{
+                        headerShown: false, // Hide the header
+                    }}
+                />
+            ) : (<Stack.Screen name="Login" component={LoginScreen}
+                options={{
+                    headerShown: false, // Hide the header
+                }} />)}
         </Stack.Navigator>
     );
 }
 
 const styles = StyleSheet.create({
+    BlurView: {
+        flex: 5 / 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignContent: 'center',
+
+        borderRadius: 10,
+        borderColor: 'white',
+        borderWidth: 2,
+        minHeight: 300,
+    },
+    StackNavigator: {
+        flex: 1,
+        backgroundColor: 'black',
+        alignItems: 'center',
+        justifyContent: 'center',
+        headerStyle: {
+            backgroundColor: 'rgba(16,41,78,1)', // Header background color
+            borderBottomWidth: 0.5, // Header bottom border width
+            borderBottomColor: 'red', // Header bottom border color
+            elevation: 0, // Header elevation in Android (to avoid shadow)
+            height: 0,
+        },
+
+    },
     button: {
         width: 250,
         height: 40,
@@ -192,32 +196,40 @@ const styles = StyleSheet.create({
         borderWidth: 1,
     },
     loginContainer: {
+        flex: 1,
+        alignContent: 'center',
+        justifyContent: 'center',
         width: 300,
         height: 400,
-        borderColor: '#fff',
-        borderWidth: 2,
-        borderRadius: 10,
+        // borderColor: 'red',
+        // borderWidth: 1,
+        // borderRadius: 50,
         padding: 10,
         alignItems: 'center',
     },
     backgroundObject: {
-        width: 100,
-        height: 100,
+        width: 200,
+        height: 200,
         backgroundColor: 'red',
         position: 'absolute',
+        borderTopWidth: 50,
     },
     profileImage: {
         width: 100,
         height: 100,
         borderRadius: 50,
-        borderWidth: 50,
+        borderWidth: 2,
         borderColor: 'white',
-        marginVertical: 20,
+        marginVertical: 10,
+        padding: 10,
     },
     image: {
         flex: 1,
         justifyContent: "center",
         resizeMode: "cover",
+        justifyContent: "center",
+        margin: 10,
+        padding: 10,
     },
     container: {
         flex: 1 / 5,
@@ -231,36 +243,50 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-evenly',
     },
-    container_text: {
-        flex: 6 / 10,
+    containerImage: {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        margin: 5,
-        marginHorizontal: 45,
+        marginTop: '5%',
+        // borderColor: 'red',
+        // borderWidth: 4,
+        // borderRadius: 2,
+
     },
     background: {
         flex: 1,
-        backgroundColor: 'black',
+        backgroundColor: '#0a1e3c',
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'center',
     },
     text: {
         color: 'white',
-        fontSize: 20,
+        fontSize: 25,
         fontWeight: 'bold',
         backgroundColor: 'rgba(100, 100, 100, 0)',
         padding: 2,
         borderRadius: 5,
         textAlign: 'center',
 
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: { width: -1, height: 1 },
+        textShadowRadius: 5,
+    },
+    input: {
+        backgroundColor: 'rgba(0,0,0,0.3)',
+        borderRadius: 5,
+        padding: 2,
+        paddingHorizontal: 15,
+        margin: 5,
+        color: 'white',
+        fontSize: 17,
+        textAlign: 'center',
     },
     button: {
-        backgroundColor: 'rgba(20,20,25,1)',
         borderRadius: 5,
-        padding: 20,
-        margin: 20,
+        padding: 10,
+        margin: 5,
         color: 'white',
         fontSize: 20,
     },

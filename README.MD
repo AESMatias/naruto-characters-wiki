@@ -1,6 +1,5 @@
-# rick-and-morty-characters
-Naruto Characters Wiki App made in React Native
-
+# Naruto Characters Wiki!
+Naruto Characters it's a finder App made in React Native 
 
 #Acknowledgements
 Free Copyright Logo: 

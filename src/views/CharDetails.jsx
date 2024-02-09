@@ -1,4 +1,4 @@
-import { Image, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import React, { useLayoutEffect, useState } from 'react'
 import { TouchableOpacity, FlatList } from 'react-native'
 import { AntDesign } from '@expo/vector-icons';
@@ -9,6 +9,11 @@ import { useRoute } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { globalStyles } from '../styles/styles.jsx';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToFavorites, removeFromFavorites } from '../store/slices/AccountSlice.jsx';
+import { toStoreFavChar } from '../utils/handleData.jsx';
+import { Share } from 'react-native';
+
 
 export const CharDetails = ({ charData, ...props }) => {
 
@@ -24,6 +29,46 @@ export const CharDetails = ({ charData, ...props }) => {
     }
 
     const { params: { charDataView } } = useRoute();
+
+
+    const dispatch = useDispatch();
+
+    const URL = 'https://play.google.com/store/apps/details?id=com.aesmatias.narutocharacterswiki'
+
+    const handleShare = async () => {
+        playSound();
+        console.log('Share the character', charDataView.name);
+        try {
+            const result = await Share.share({
+                message:
+                    `${URL} The Character data of ${charDataView.name} is: ${charDataView}`,
+            });
+            if (result.action === Share.sharedAction) {
+                if (result.activityType) {
+                    // shared with activity type of result.activityType
+                } else {
+                    // shared
+                }
+            } else if (result.action === Share.dismissedAction) {
+                // dismissed
+            }
+        } catch (error) {
+            console.log('Error at sharing the character', error.message);
+        }
+    };
+
+    const handleAddFav = () => {
+        playSound();
+        try {
+            dispatch(addToFavorites(charDataView)); //TODO: Fix this
+            toStoreFavChar(charDataView);
+        } catch (error) {
+            console.log('Error adding to favorites in dispatch at charModal.jsx', error);
+        }
+        // we use removeFromFavorites only if we want to remove the character from the favorites
+
+    }
+
 
     const CharPrintInfo = () => {
         return (
@@ -166,12 +211,13 @@ export const CharDetails = ({ charData, ...props }) => {
                             charDataView.voiceActors['japanese'] : 'Unknown'}</Text>
 
                     <View style={styles.containerButtons}>
-                        <TouchableOpacity onPress={playSound}>
-                            <Text style={styles.text_favorite}>Add to favorites  {
-                                <AntDesign name="star" size={16} color="white" />}</Text>
+                        <TouchableOpacity onPress={handleAddFav}>
+                            <Text style={styles.text_favorite}>Add to favorites
+                                {<AntDesign name="star" size={16} color="white" />}
+                            </Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={playSound}>
+                        <TouchableOpacity onPress={handleShare}>
                             <Text style={styles.text_share}>Share {
                                 <Feather name="share" size={16} color="white" />}</Text>
                         </TouchableOpacity>
@@ -203,8 +249,9 @@ export const CharDetails = ({ charData, ...props }) => {
                         <Entypo name="info-with-circle" size={17} color="white" />}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={playSound}>
-                    <Text style={styles.text_favorite}>Add to favorites  {
-                        <AntDesign name="star" size={16} color="white" />}</Text>
+                    <Text style={styles.text_favorite}>Add to favorites
+                        {<AntDesign name="star" size={16} color="white" />}
+                    </Text>
                 </TouchableOpacity>
                 <MaterialCommunityIcons name="shuriken" size={30} color="white" style={styles.shuriken} />
             </View>
@@ -226,14 +273,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-evenly',
         alignItems: 'center',
-        marginVertical: 5,
+        marginBottom: 25,
     },
     containerButtons: {
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
-        paddingTop: 40,
+        paddingTop: 25,
     },
     shuriken: {
         flex: 1,
@@ -284,7 +331,7 @@ const styles = StyleSheet.create({
     },
     text_favorite: {
         flex: 1,
-        borderWidth: 1,
+        borderWidth: 0.5,
         color: 'white',
         fontSize: 22,
         fontWeight: 'bold',
@@ -298,7 +345,7 @@ const styles = StyleSheet.create({
     },
     text_share: {
         flex: 1,
-        borderWidth: 1,
+        borderWidth: 0.5,
         color: 'white',
         fontSize: 22,
         fontWeight: 'bold',
@@ -317,6 +364,5 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         borderColor: 'white',
         alignSelf: 'center',
-
     }
 })

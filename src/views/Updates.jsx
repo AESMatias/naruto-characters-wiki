@@ -2,8 +2,6 @@ import {
     StyleSheet, Text, View, Pressable, Button, Alert, Share, Linking
 } from 'react-native'
 import React from 'react'
-import { Modal } from '../components/Modal.jsx'
-import { useState } from 'react'
 import { FontAwesome } from '@expo/vector-icons';
 import { openURL } from '../utils/openURL'
 import { useNavigation } from '@react-navigation/native';

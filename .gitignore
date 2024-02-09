@@ -20,6 +20,7 @@ web-build/
 
 # Metro
 .metro-health-check*
+android/
 
 # debug
 npm-debug.*
@@ -122,6 +123,7 @@ target/
 # IPython
 profile_default/
 ipython_config.py
+app.json
 
 # pyenv
 #   For a library or package, you might want to ignore these files since the code is

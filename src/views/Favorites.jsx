@@ -9,6 +9,8 @@ import { FlatList } from 'react-native';
 import { WriteNameComponent } from '../components/WriteNameComponent.jsx';
 import { loadData, retrieveData } from '../utils/handleData.jsx';
 import { Character } from '../components/Character.jsx';
+import { useSelector, useDispatch } from 'react-redux';
+
 
 export const Favorites = () => {
 
@@ -19,45 +21,24 @@ export const Favorites = () => {
     const [FilledModal, setFilledModal] = useState({}) // The modal object of every character
     const [favorites, setFavorites] = useState([])
 
-    useEffect(() => {
 
-        // console.log('OBJECT CHANGED ', FilledModal)
-
-        return () => {
-            // console.log('OBJECT HAS BEEN CHANGED RETURNNNNNNNNNNN ', FilledModal)
-        }
-    }, [FilledModal]) // When some character is clicked, the object of the character is passed to the modal
-
-    useEffect(() => {
-        // console.log('text  ', text)
-
-        return () => {
-            // console.log('text changed return DESFASADO ANTERIOR ', text)
-        }
-    }, [text])
 
     useEffect(() => {
         // loadData(setdataFetched);
         retrieveData().then((data) => {
-            // tiene una key asi que es un objeto, por lo que lo parseamos 
             setFavorites(data);
-            console.log('FAVORITES RETRIEVssED', data);
-            console.log('RETRIEVssED 2222', favorites);
         });
-
-
     }, []); // Started when the component is mounted
 
-    useEffect(() => {
-        console.log('FAVORITES EFFECT', favorites);
-    }, [favorites]); // Observe changes in dataFetched
 
     useEffect(() => {
         onChangeText('');
-        return () => {
+        retrieveData().then((data) => {
+            setFavorites(data);
+            console.log('FAVORITES RETRIEVssED 2222', data);
+            console.log('RETRIEVssED 2222', favorites);
             setRefreshing(false);
-            loadData(setdataFetched);
-        }
+        });
     }, [refreshing]); // Observe changes in the refresing state
 
     return (
@@ -70,7 +51,7 @@ export const Favorites = () => {
                 withInput
                 FilledModal={[FilledModal]}
                 onRequestClose={() => setcharModal(false)}>
-                <CharModal charData={FilledModal} setcharModal={setcharModal} />
+                <CharModal charData={FilledModal} setcharModal={setcharModal} setFavorites={setFavorites} />
                 {/* <Text>INSIDE MODAL</Text> */}
             </Modal>
             <View style={styles.flat_container}>

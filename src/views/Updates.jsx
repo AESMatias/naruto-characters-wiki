@@ -5,12 +5,14 @@ import React from 'react'
 import { FontAwesome } from '@expo/vector-icons';
 import { openURL } from '../utils/openURL'
 import { useNavigation } from '@react-navigation/native';
+import { playSound } from '../utils/tapSound.jsx';
 
 export const Updates = () => {
 
     const URL = 'https://play.google.com/store/apps/details?id=com.aesmatias.narutocharacterswiki'
 
     const onShare = async () => {
+        playSound();
         try {
             const result = await Share.share({
                 message:
@@ -31,6 +33,7 @@ export const Updates = () => {
     };
 
     const openPlayStoreForRating = async () => {
+        playSound();
         const packageName = 'com.aesmatias.narutocharacterswiki';
         const playStoreUrl = `market://details?id=${packageName}`;
 
@@ -74,7 +77,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     containerButtons: {
-        flex: 1 / 6,
+        flex: 1 / 5,
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'space-evenly',

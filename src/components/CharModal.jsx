@@ -13,7 +13,7 @@ import { addToFavorites, removeFromFavorites } from '../store/slices/AccountSlic
 import { toStoreFavChar } from '../utils/handleData.jsx';
 
 
-export const CharModal = ({ charData, setcharModal, favoritesTemp, setFavoritesTemp }) => {
+export const CharModal = ({ charData, setcharModal, favoritesTemp, setFavorites }) => {
 
     const { navigate } = useNavigation();
 
@@ -41,8 +41,7 @@ export const CharModal = ({ charData, setcharModal, favoritesTemp, setFavoritesT
         try {
             dispatch(addToFavorites(charData)); //TODO: Fix this
             toStoreFavChar(charData);
-            console.log('Add to favorites:', charData);
-            console.log('Favorites:', favorites[0]);
+            setFavorites(charData);
             // FavoritesLengthUpdater(dispatch);
         } catch (error) {
             console.log('Error adding to favorites in dispatch at charModal.jsx', error);

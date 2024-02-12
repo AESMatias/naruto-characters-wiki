@@ -5,8 +5,8 @@ import { playSound } from '../utils/tapSound';
 
 export const WriteNameComponent = ({ setdataFetched, onChangeText, text }) => {
     const handleFetch = async () => {
-        const nameSearched = await searchByName(text);
-        setdataFetched(nameSearched);
+        // const nameSearched = await searchByName(text);
+        // setdataFetched(nameSearched);
         playSound();
 
         // arrayOfCharacters.then((data) => {
@@ -23,37 +23,40 @@ export const WriteNameComponent = ({ setdataFetched, onChangeText, text }) => {
                 onChangeText={text => onChangeText(text)}
                 value={text}
             />
-            <Pressable
+            {/* <Pressable
                 onPress={handleFetch}
                 activeOpacity={0.5}
                 style={styles.button}>
                 <Text style={styles.text}>Search!</Text>
-            </Pressable>
+            </Pressable> */}
         </View>
     )
 };
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1 / 10,
-        width: '99%',
+        flex: 1 / 15,
+        width: '100%',
         flexDirection: 'column',
         backgroundColor: 'rgba(10,30,60,1)',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 25,
+        padding: 5,
         marginBottom: 2,
-        borderWidth: 1,
+        borderWidth: 0,
         borderColor: 'black',
-        borderRadius: 10,
+        borderRadius: 0,
+
+        borderTopWidth: 0.5,
+        borderTopColor: 'rgba(255,255,255,1)',
     },
     input: {
         height: 30,
         margin: 2,
-        borderWidth: 1,
-        width: '90%',
+        borderWidth: 0.5,
+        width: '99%',
         backgroundColor: 'rgba(255, 255, 255, 0.5)',
-        padding: 1,
+        padding: 2,
         borderRadius: 5,
         textAlign: 'center',
         alignSelf: 'center',
@@ -61,7 +64,6 @@ const styles = StyleSheet.create({
         fontStyle: 'italic',
         color: 'rgba(0,0,0,0.5)',
         fontSize: 15,
-
     },
     button: {
         alignItems: "center",

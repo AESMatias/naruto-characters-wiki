@@ -13,9 +13,28 @@ import { useNavigation } from '@react-navigation/native';
 import 'firebase/firestore';
 import { useSelector, useDispatch } from 'react-redux';
 import { setUser, clearUser } from '../store/slices/AccountSlice.jsx';
-
+import _ from 'lodash';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { setPersistence } from 'firebase/auth';
+import { setAuthStorage, logOutStorage } from '../utils/setAuthData.jsx';
+import { playSound } from '../utils/tapSound.jsx';
 
 const auth = getAuth(app);
+// setPersistence(auth, AsyncStorage)
+//     .then(() => {
+//         // Existing and future Auth states are now persisted in the current
+//         // session only. Closing the window would clear any existing state even
+//         // if a user forgets to sign out.
+//         // ...
+//     })
+//     .catch((error) => {
+//         // Handle Errors here.
+//         const errorCode = error.code;
+//         const errorMessage = error.message;
+//         Alert.alert('Error', errorMessage);
+//     }); setPersistence(auth, AsyncStorage);
+// Alert.alert('Firebase initialized, session>', auth.currentUser)
+
 
 const LoggedScreen = () => {
     const { currentUser } = useSelector((state) => state.userReducer);
@@ -25,9 +44,12 @@ const LoggedScreen = () => {
 
     return (
         <View style={styles.background}>
-            <Text style={styles.text}>MY ACCOUNT: {currentUser ? currentUser : 'Not Logged'}</Text>
-            <TouchableOpacity onPress={() => { handleLogOut(navigation, currentUser) }}>
-                <Text style={styles.text}>Sign out</Text>
+            <Text style={styles.text}>You are logged in as: </Text>
+            <Text style={styles.text}>{currentUser ? currentUser : 'Not Logged'}</Text>
+            <TouchableOpacity
+                style={styles.button}
+                onPress={() => { handleLogOut(navigation, currentUser) }}>
+                <Text style={[styles.text, styles.textButton]}>Sign out</Text>
             </TouchableOpacity>
         </View>
     )
@@ -35,8 +57,10 @@ const LoggedScreen = () => {
 }
 
 const handleLogOut = (navigation, currentUser) => {
+    playSound();
+    logOutStorage();
     signOut(auth);
-    clearUser();
+    dispatch(clearUser());
     console.log(currentUser, 'User signed out');
     // navigation.navigate('Login');
 }
@@ -56,8 +80,11 @@ const LoginScreen = () => {
 
     auth.onAuthStateChanged((user) => {
         if (user) {
+            // setPersistence(auth, AsyncStorage);
             // navigation.navigate('Logged');
             setIsLogged(true);
+            setAuthStorage(user);
+            console.log('onAuthStateChanged:', user.email, 'is logged')
         } else {
             // navigation.navigate('Login');
             dispatch(clearUser());
@@ -65,7 +92,10 @@ const LoginScreen = () => {
         }
     });
 
+
+
     const handleCreateAccount = () => {
+        playSound();
         createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const user = userCredential.user;
@@ -76,11 +106,13 @@ const LoginScreen = () => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
                 console.log('Error creating user:', errorMessage, 'Code:', errorCode);
-                Alert.alert('Error creating user:', errorMessage);
+                Alert.alert('Error creating user:', errorMessage, email, password, 'a');
+
             });
     }
 
     const handleSignIn = () => {
+        playSound();
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const user = userCredential.user;
@@ -94,6 +126,16 @@ const LoginScreen = () => {
                 console.log('Error signing in:', errorMessage, 'Code:', errorCode);
                 Alert.alert('Error signing in:', errorMessage);
             });
+    }
+
+    const emailInputHandle = (email) => {
+        const emailHasSpaces = _.includes(email, ' ');
+        if (emailHasSpaces) {
+            const emailWithoutSpaces = _.replace(_.trim(email), ' ', '');
+            return emailWithoutSpaces;
+        } else {
+            return email;
+        }
     }
 
     return (
@@ -118,7 +160,7 @@ const LoginScreen = () => {
 
                     <View>
                         <Text style={styles.text}>E-mail</Text>
-                        <TextInput onChangeText={text => setEmail(text)} style={styles.input} placeholder="Your e-mail" />
+                        <TextInput onChangeText={text => setEmail(emailInputHandle(text))} style={styles.input} placeholder="Your e-mail" />
                     </View>
 
                     <View>
@@ -184,16 +226,18 @@ const styles = StyleSheet.create({
             height: 0,
         },
 
+
     },
     button: {
-        width: 250,
-        height: 40,
-        borderRadius: 10,
+        width: 180,
+        height: 35,
+        borderRadius: 5,
         alignItems: 'center',
         justifyContent: 'center',
-        marginVertical: 10,
+        marginVertical: 5,
         borderColor: '#fff',
         borderWidth: 1,
+
     },
     loginContainer: {
         flex: 1,
@@ -259,19 +303,24 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'center',
+
+
     },
     text: {
         color: 'white',
-        fontSize: 25,
+        fontSize: 22,
         fontWeight: 'bold',
         backgroundColor: 'rgba(100, 100, 100, 0)',
         padding: 2,
         borderRadius: 5,
         textAlign: 'center',
-
+        margin: 5,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: { width: -1, height: 1 },
         textShadowRadius: 5,
+    },
+    textButton: {
+        fontSize: 18,
     },
     input: {
         backgroundColor: 'rgba(0,0,0,0.3)',
@@ -283,11 +332,5 @@ const styles = StyleSheet.create({
         fontSize: 17,
         textAlign: 'center',
     },
-    button: {
-        borderRadius: 5,
-        padding: 10,
-        margin: 5,
-        color: 'white',
-        fontSize: 20,
-    },
+
 })

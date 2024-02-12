@@ -1,6 +1,8 @@
 import { Linking } from "react-native";
+import { playSound } from '../utils/tapSound.jsx';
 
 export const openURL = async (URL) => {
+    playSound();
     if (!URL) {
         console.error('URL is not defined at /src/utils/openURL.jsx');
         return;

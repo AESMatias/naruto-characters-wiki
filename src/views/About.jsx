@@ -5,14 +5,16 @@ import React from 'react'
 import { Modal } from '../components/Modal.jsx'
 import { useState } from 'react'
 import { FontAwesome } from '@expo/vector-icons';
-import { openURL } from '../utils/openURL'
 import { useSelector } from 'react-redux';
+import { playSound } from '../utils/tapSound.jsx';
+import { openURL } from '../utils/openURL.jsx'
 
 export const About = () => {
 
     const URL = 'https://play.google.com/store/apps/details?id=com.aesmatias.narutocharacterswiki'
 
     const onShare = async () => {
+        playSound();
         try {
             const result = await Share.share({
                 message:
@@ -33,6 +35,7 @@ export const About = () => {
     };
 
     const openPlayStoreForRating = async () => {
+        playSound();
         const packageName = 'com.aesmatias.narutocharacterswiki';
         const playStoreUrl = `market://details?id=${packageName}`;
 

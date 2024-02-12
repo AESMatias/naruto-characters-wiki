@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { View, StyleSheet, FlatList, SafeAreaView, Text } from 'react-native';
+import { View, StyleSheet, FlatList, SafeAreaView, Text, Alert } from 'react-native';
 import { WriteNameComponent } from '../components/WriteNameComponent.jsx';
 import { useEffect, useState } from 'react';
 import { Character } from '../components/Character.jsx';
@@ -8,7 +8,8 @@ import { CharModal } from '../components/CharModal.jsx'
 import { Modal } from '../components/Modal.jsx'
 import { useDispatch, useSelector } from 'react-redux';
 import { addToFavorites } from '../store/slices/AccountSlice.jsx';
-
+import { CheckAuthStorage } from '../../firebaseConfig.js';
+import { setUser } from '../store/slices/AccountSlice.jsx';
 
 export const Home = () => {
 
@@ -54,26 +55,46 @@ export const Home = () => {
     //     }
 
     // }
+    CheckAuthStorage().then((data) => {
+        if (data !== null) {
+            dispatch(setUser(data.email));
+            console.log('User/Auth Data was found in AsyncStorage:', data);
+        } else {
+            console.log('No data was found in AsyncStorage at loadData/handleData.jsx');
+        }
+    });
+
+    useEffect(() => {
+        loadData(setdataFetched, setFavoritesTemp);
+    }, []); // Started when the component is mounted
+
 
     useEffect(() => {
         console.log('FAVORITES AAAAAAAAAAAAAAAAAAAA', favoritesTemp);
         favoritesTemp.forEach((char) => {
             dispatch(addToFavorites(char));
-            console.log('Add to favorites:', char);
-            console.log('222222:', favorites);
+            console.log('AAA Add to favorites:', char);
+            console.log('AAA 222222:', favoritesTemp);
         });
+    }, []);
 
-    }, [favoritesTemp]);
+    // useEffect(() => {
+    //     console.log('STORE FAVORITES 555 aaaaaaaaaaaaaaaaaaa', favorites);
+    // }
+
+    //     , [favorites]);
 
     useEffect(() => {
-        loadData(setdataFetched, setFavoritesTemp);
+        console.log('Refreshing the home, but nothing happend...')
+        setRefreshing(false);
+    }, [refreshing]); // Observe changes in the refresing state
 
-    }, []); // Started when the component is mounted
 
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar style="auto" />
-            <Modal id='modal_id' isModalOpen={charModal} favoritesTemp={favoritesTemp} setFavoritesTemp={setFavoritesTemp}
+            <Modal id='modal_id' isModalOpen={charModal} favoritesTemp={favoritesTemp}
+                setFavoritesTemp={setFavoritesTemp}
                 withInput
                 FilledModal={[FilledModal]}
                 onRequestClose={() => setcharModal(false)}>

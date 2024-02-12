@@ -1,29 +1,24 @@
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+// import { incrementCounterFavorites } from "../store/slices/CounterSlice";
 
-export const updateFavoritesLength = async (incrementCounterFavorites, setFavCounter) => {
+export const updateFavoritesLength = async (incrementCounterFavorites, dispatch) => {
     try {
         const data = await retrieveData();
-        console.log('bbbbbbbbbbbBBBBBBBBBBBb', data)
         const dataArray = Object.values(data);
         const favoritesLength = dataArray.length;
         dispatch(incrementCounterFavorites(favoritesLength));
-
-        setFavCounter(favoritesLength);
-
-        console.log('FAV Favorites length updated:', favoritesLength);
+        // const memoizedIncrementCounter = useMemo(() => dispatch(incrementCounterFavorites), [dispatch]);
     } catch (error) {
         console.error('FAV Error retrieving favorites length:', error);
     }
 };
 
 
-export const toStoreFavChar = async (value) => {
-    console.log('The value is:', value)
+export const toStoreFavChar = async (value, dispatch) => {
     try {
         const jsonValue = JSON.stringify(value)
         await AsyncStorage.setItem(`fav_Char_${value.id}`, jsonValue)
-        console.log('The id :', value.id, 'has been stored successfully in AsyncStorage');
     } catch (e) {
         console.error('Error saving the data:', e);
     }
@@ -39,28 +34,40 @@ export const storeData = async (id, value) => {
     }
 }
 
+export const setNoFavChars = async (setdataFetched, data) => {
+    // setdataFetched(data);
+
+    const allKeys = await AsyncStorage.getAllKeys();
+    const filteredKeys = allKeys.filter(key => key.startsWith("cachedCharacter"));
+    const storedData = await AsyncStorage.multiGet(filteredKeys);
+    const storedDataMapped = storedData.map(([key, value]) => JSON.parse(value));
+
+    setdataFetched(storedDataMapped);
+}
 
 export const loadData = async (setdataFetched, setFavoritesTemp) => {
     // This function loads the data rather from the API or from the AsyncStorage
     CheckCharsInAsyncStorage().then((data) => {
         if (data !== null) {
-            setdataFetched(data);
-            console.log('Data was found in AsyncStorage:', data);
+            // setdataFetched(data);
+            setNoFavChars(setdataFetched, data);
+            // console.log('Data was found in AsyncStorage:', data);
         } else {
             console.log('No data was found in AsyncStorage at loadData/handleData.jsx');
-            fetchCharsData(setdataFetched);
+            fetchCharsData(setdataFetched, data);
         }
     });
     retrieveData().then((data) => {
         // We set the favorites in the useState hook to be used in the modal (drilling?)
-        setFavoritesTemp(data);
+        // setFavoritesTemp(data);
+        console.log('line beefore deleteeeeed solve this')
     });
 }
 
 export const fetchCharsData = async (setdataFetched) => {
     const arrayOfCharacters = [];
     try {
-        for (let i = 1; i <= 73; i++) { // TO PAGE 72 MAX
+        for (let i = 1; i <= 73; i++) { // TO PAGE 73 MAX
             const response = await axios.get(`https://narutodb.xyz/api/character?page=${i}`);
             const data = await response.data.characters;
             arrayOfCharacters.push(data);
@@ -73,7 +80,6 @@ export const fetchCharsData = async (setdataFetched) => {
                 await AsyncStorage.setItem(`cachedCharacter_${i}`, jsonValue);
             });
             const jsonValue = JSON.stringify(arrayOfCharactersFlattened);
-            console.log('8888 Data stored successfully:', jsonValue);
         } catch (error) {
             console.error('Error storing the data at storeData/handleData.jsx:', error);
         }
@@ -89,10 +95,9 @@ export const CheckCharsInAsyncStorage = async () => {
         const allKeys = await AsyncStorage.getAllKeys();
         const filteredKeys = allKeys.filter(key => key.startsWith("cachedCharacter"));
         const storedData = await AsyncStorage.multiGet(allKeys);
-        if (allKeys !== null && storedData !== null && filteredKeys.length > 10) {
-            console.log(' filteredKeys.length > 10', filteredKeys.length)
+        if (allKeys !== null && storedData !== null && filteredKeys.length > 1000) {
+            console.log(' filteredKeys.length > 1000', filteredKeys.length)
             const charactersData = storedData.map(([key, value]) => JSON.parse(value));
-            console.log('Data retrieved:', charactersData);
             return charactersData;
         } else {
             // No data was found in AsyncStorage
@@ -123,7 +128,7 @@ export const retrieveData = async () => {
             // let arrayFiltered = charactersData.filter((char) => (char[0].startsWith("fav_Char_")
             //     && char !== null && char !== undefined));
             let charactersMapped = charsFiltered.map(([key, value]) => JSON.parse(value));
-            console.log('Favorites found in retrieveData/Handle:', charsFiltered);
+            console.log('Favorites found in retrieveData/Handle:', charactersMapped);
             return charactersMapped;
         } else {
             // No data was found in AsyncStorage

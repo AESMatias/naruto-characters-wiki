@@ -37,11 +37,10 @@ export const CharDetails = ({ charData, isFavorite, ...props }) => {
 
     const handleShare = async () => {
         playSound();
-        console.log('Share the character', charDataView.name);
         try {
             const result = await Share.share({
                 message:
-                    `${URL} The Character data of ${charDataView.name} is: ${charDataView}`,
+                    `${URL}\n\nThe Character data of ${charDataView.name} is:\n\n ${JSON.stringify(charDataView)}`,
             });
             if (result.action === Share.sharedAction) {
                 if (result.activityType) {

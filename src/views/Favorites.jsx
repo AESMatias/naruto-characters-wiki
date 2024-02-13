@@ -51,7 +51,11 @@ export const Favorites = () => {
                 withInput
                 FilledModal={[FilledModal]}
                 onRequestClose={() => setcharModal(false)}>
-                <CharModal charData={FilledModal} setcharModal={setcharModal} setFavorites={setFavorites} />
+                <CharModal charData={FilledModal}
+                    setcharModal={setcharModal}
+                    setFavorites={setFavorites}
+                    isFavorite={true}
+                />
                 {/* <Text>INSIDE MODAL</Text> */}
             </Modal>
             <View style={styles.flat_container}>

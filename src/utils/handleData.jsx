@@ -23,6 +23,14 @@ export const toStoreFavChar = async (value, dispatch) => {
         console.error('Error saving the data:', e);
     }
 }
+export const toRemoveFavChar = async (value, dispatch) => {
+    try {
+        const jsonValue = JSON.stringify(value)
+        await AsyncStorage.removeItem(`fav_Char_${value.id}`)
+    } catch (e) {
+        console.error('Error removing the data:', e);
+    }
+}
 
 export const storeData = async (id, value) => {
     try {

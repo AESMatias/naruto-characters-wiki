@@ -10,10 +10,10 @@ import { globalStyles } from '../styles/styles.jsx';
 import { BlurView } from 'expo-blur';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToFavorites, removeFromFavorites } from '../store/slices/AccountSlice.jsx';
-import { toStoreFavChar } from '../utils/handleData.jsx';
+import { toStoreFavChar, toRemoveFavChar } from '../utils/handleData.jsx';
+import { FontAwesome } from '@expo/vector-icons';
 
-
-export const CharModal = ({ charData, setcharModal, favoritesTemp, setFavorites }) => {
+export const CharModal = ({ charData, setcharModal, favoritesTemp, setFavorites, isFavorite = false }) => {
 
     const { navigate } = useNavigation();
 
@@ -26,8 +26,9 @@ export const CharModal = ({ charData, setcharModal, favoritesTemp, setFavorites 
 
     handleOnPress = () => {
         charDataView = charData;
+        isFavoriteRouter = isFavorite;
         console.log('LA DATRA ES ', charData, { charDataView });
-        navigate('CharDetails', { charDataView });
+        navigate('CharDetails', { charDataView, isFavoriteRouter });
         playSound();
         setcharModal(false)
     }
@@ -48,6 +49,17 @@ export const CharModal = ({ charData, setcharModal, favoritesTemp, setFavorites 
         }
         // we use removeFromFavorites only if we want to remove the character from the favorites
 
+    }
+    const handleRemoveFav = () => {
+        playSound();
+        try {
+            dispatch(removeFromFavorites(charData)); //TODO: Fix this
+            toRemoveFavChar(charData);
+            // setFavorites(prev => prev.filter(char => char !== charData));
+            // FavoritesLengthUpdater(dispatch);
+        } catch (error) {
+            console.log('Error removing to favorites in dispatch at charModal.jsx', error);
+        }
     }
 
     let returnedValue = charData ? (
@@ -79,16 +91,20 @@ export const CharModal = ({ charData, setcharModal, favoritesTemp, setFavorites 
                 </TouchableOpacity>
 
 
-                {favorites ?
-                    <TouchableOpacity onPress={handleAddFav}>
-                        <Text style={styles.text_favorite}>Add to favorites  {
-                            <AntDesign name="star" size={16} color="white" />}</Text>
-                    </TouchableOpacity> : <Text>ERROR</Text>}
+                {isFavorite ?
+                    <TouchableOpacity onPress={handleRemoveFav}>
+                        <Text style={[styles.text_favorite, { backgroundColor: 'red', fontSize: 15 }]}>
+                            Remove from favorites {
+                                <FontAwesome name="trash" size={17} color="white" />}
+                        </Text>
+                    </TouchableOpacity>
+                    : <TouchableOpacity onPress={handleAddFav}>
+                        <Text style={styles.text_favorite}>Add to Favorites {
+                            <AntDesign name="star" size={16} color="white" />}
 
-                {favoritesTemp}
+                        </Text>
+                    </TouchableOpacity>}
 
-
-                {/* <MaterialCommunityIcons name="shuriken" size={30} color="white" style={styles.shuriken} /> */}
             </View>
             <View styles={styles.container_info}>
                 {/* <Text style={styles.text_info}>Status: {charData.status}</Text>

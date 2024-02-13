@@ -13,9 +13,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToFavorites, removeFromFavorites } from '../store/slices/AccountSlice.jsx';
 import { toStoreFavChar } from '../utils/handleData.jsx';
 import { Share } from 'react-native';
-
-
-export const CharDetails = ({ charData, ...props }) => {
+import { Alert } from 'react-native';
+import { toRemoveFavChar } from '../utils/handleData.jsx'
+export const CharDetails = ({ charData, isFavorite, ...props }) => {
 
     const [imageError, setImageError] = useState(false);
 
@@ -28,7 +28,7 @@ export const CharDetails = ({ charData, ...props }) => {
         console.log(' Error at loading the image', charDataView.images[0], imageError);
     }
 
-    const { params: { charDataView } } = useRoute();
+    const { params: { charDataView, isFavoriteRouter } } = useRoute();
 
 
     const dispatch = useDispatch();
@@ -65,8 +65,18 @@ export const CharDetails = ({ charData, ...props }) => {
         } catch (error) {
             console.log('Error adding to favorites in dispatch at charModal.jsx', error);
         }
-        // we use removeFromFavorites only if we want to remove the character from the favorites
 
+    }
+    const handleRemoveFav = () => {
+        playSound();
+        try {
+            dispatch(removeFromFavorites(charDataView)); //TODO: Fix this
+            toRemoveFavChar(charDataView);
+            // setFavorites(prev => prev.filter(char => char !== charDataView));
+            // FavoritesLengthUpdater(dispatch);
+        } catch (error) {
+            console.log('Error removing to favorites in dispatch at charModal.jsx', error);
+        }
     }
 
 
@@ -106,7 +116,7 @@ export const CharDetails = ({ charData, ...props }) => {
                         </TouchableOpacity>
                     </View> */}
 
-                    <Text style={styles.text}>
+                    <Text style={[styles.text, { fontSize: 20 }]}>
                         {charDataView.name ?
                             charDataView.name
                             : 'Unknown Name'}
@@ -210,12 +220,32 @@ export const CharDetails = ({ charData, ...props }) => {
                         (charDataView.voiceActors && charDataView.voiceActors['japanese']) ?
                             charDataView.voiceActors['japanese'] : 'Unknown'}</Text>
 
+
+
                     <View style={styles.containerButtons}>
-                        <TouchableOpacity onPress={handleAddFav}>
+
+
+                        {/* <TouchableOpacity onPress={handleAddFav}>
                             <Text style={styles.text_favorite}>Add to favorites
                                 {<AntDesign name="star" size={16} color="white" />}
                             </Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
+                        {(isFavoriteRouter.toString() === 'true') ?
+                            <TouchableOpacity onPress={handleRemoveFav}>
+                                <Text style={[styles.text_favorite, { backgroundColor: 'red' }]}>
+                                    Remove {
+                                        <FontAwesome name="trash" size={24} color="white" />}
+                                </Text>
+                            </TouchableOpacity>
+                            : <TouchableOpacity onPress={handleAddFav}>
+                                <Text style={styles.text_favorite}>Add to Favorites {
+                                    <AntDesign name="star" size={16} color="white" />}
+
+                                </Text>
+                            </TouchableOpacity>}
+
+
+
 
                         <TouchableOpacity onPress={handleShare}>
                             <Text style={styles.text_share}>Share {

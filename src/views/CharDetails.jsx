@@ -12,9 +12,10 @@ import { globalStyles } from '../styles/styles.jsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToFavorites, removeFromFavorites } from '../store/slices/AccountSlice.jsx';
 import { toStoreFavChar } from '../utils/handleData.jsx';
-import { Share } from 'react-native';
-import { Alert } from 'react-native';
+import { Share, Alert } from 'react-native';
 import { toRemoveFavChar } from '../utils/handleData.jsx'
+
+
 export const CharDetails = ({ charData, isFavorite, ...props }) => {
 
     const [imageError, setImageError] = useState(false);

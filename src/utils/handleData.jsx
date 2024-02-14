@@ -1,6 +1,31 @@
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 // import { incrementCounterFavorites } from "../store/slices/CounterSlice";
+import { database } from "../../firebaseConfig.js";
+import { collection, addDoc } from "firebase/firestore";
+import { getDocs } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
+
+
+export const saveUserPreferences = async (newFavoritesList) => {
+    try {
+        // Get the user auth data from the AsyncStorage
+        const storedData = await AsyncStorage.getItem('auth');
+        const authData = JSON.parse(storedData);
+        // Object to save in the database
+        const itemToSave = { auth: authData, favorites: newFavoritesList };
+        // Reference to the document with the user's email
+        const userDocRef = doc(database, "users", authData.uid);
+        // Save the data in the database
+        await setDoc(userDocRef, itemToSave);
+        console.log('SaveUserPreferences - data saved successfully for :', authData.uid);
+    } catch (error) {
+        console.error('Error saving the user favorites at saveUserPreferences:', error);
+    }
+}
+
+
+
 
 export const updateFavoritesLength = async (incrementCounterFavorites, dispatch) => {
     try {
@@ -13,7 +38,6 @@ export const updateFavoritesLength = async (incrementCounterFavorites, dispatch)
         console.error('FAV Error retrieving favorites length:', error);
     }
 };
-
 
 export const toStoreFavChar = async (value, dispatch) => {
     try {

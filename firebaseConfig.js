@@ -18,15 +18,14 @@ import { getFirestore } from "firebase/firestore";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 export const firebaseConfig = {
-    apiKey: Constants.expoConfig.extra.extra.apiKey,
-    authDomain: Constants.expoConfig.extra.extra.authDomain,
-    projectId: Constants.expoConfig.extra.extra.projectId,
-    storageBucket: Constants.expoConfig.extra.extra.storageBucket,
-    messagingSenderId: Constants.expoConfig.extra.extra.messagingSenderId,
-    appId: Constants.expoConfig.extra.extra.appId,
-    measurementId: Constants.expoConfig.extra.extra.measurementId
+    apiKey: Constants.expoConfig.environmentVars.apiKey,
+    authDomain: Constants.expoConfig.environmentVars.authDomain,
+    projectId: Constants.expoConfig.environmentVars.projectId,
+    storageBucket: Constants.expoConfig.environmentVars.storageBucket,
+    messagingSenderId: Constants.expoConfig.environmentVars.messagingSenderId,
+    appId: Constants.expoConfig.environmentVars.appId,
+    measurementId: Constants.expoConfig.environmentVars.measurementId
 };
-
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
 // Persistence for the user's session through the app

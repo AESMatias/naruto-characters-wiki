@@ -10,7 +10,7 @@ import { WriteNameComponent } from '../components/WriteNameComponent.jsx';
 import { loadData, retrieveData } from '../utils/handleData.jsx';
 import { Character } from '../components/Character.jsx';
 import { useSelector, useDispatch } from 'react-redux';
-
+import { saveUserPreferences } from '../utils/handleData.jsx';
 
 export const Favorites = () => {
 
@@ -21,12 +21,18 @@ export const Favorites = () => {
     const [FilledModal, setFilledModal] = useState({}) // The modal object of every character
     const [favorites, setFavorites] = useState([])
 
-
+    const { currentUser } = useSelector((state) => state.userReducer);
 
     useEffect(() => {
         // loadData(setdataFetched);
         retrieveData().then((data) => {
             setFavorites(data);
+            if (currentUser !== null) {
+                saveUserPreferences(data);
+            }
+            else {
+                console.log('Error at saving user preferences at Favorites.jsx: currentUser is null');
+            }
         });
     }, []); // Started when the component is mounted
 

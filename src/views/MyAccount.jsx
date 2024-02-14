@@ -1,7 +1,7 @@
 import {
     StyleSheet, Text, View, Alert, Image, TextInput, TouchableOpacity
 } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react'
 import { BlurView } from 'expo-blur';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
@@ -16,17 +16,22 @@ import { setAuthStorage, logOutStorage } from '../utils/setAuthData.jsx';
 import { playSound } from '../utils/tapSound.jsx';
 import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+import { AntDesign } from '@expo/vector-icons';
+import * as WebBrowser from 'expo-web-browser';
+import * as Google from 'expo-auth-session/providers/google';
+import { GoogleAuthProvider, onAuthStateChanged, signInWithCredential } from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
+
+WebBrowser.maybeCompleteAuthSession();
 
 
-const auth = initializeAuth(app, {
+export const auth = initializeAuth(app, {
     persistence: getReactNativePersistence(ReactNativeAsyncStorage)
 });
 
 const LoggedScreen = () => {
     const { currentUser } = useSelector((state) => state.userReducer);
     const navigation = useNavigation();
-
-
 
     return (
         <View style={styles.background}>
@@ -53,6 +58,11 @@ const handleLogOut = (navigation, currentUser) => {
 
 const LoginScreen = () => {
 
+    const [googleUserInfo, setGoogleUserInfo] = useState({});
+    const [request, response, promptAsync] = Google.useAuthRequest({
+        androidClientId: 'https://328352683861-d12j76qqdps3i06d3s57ffcfdb0sig3v.apps.googleusercontent.com/',
+    });
+
     const [email, setEmail] = useState(``)
     const [password, setPassword] = useState(``)
     const [isLogged, setIsLogged] = useState(false);
@@ -78,6 +88,51 @@ const LoginScreen = () => {
         }
     });
 
+
+
+    const handleGoogleOAuth = () => {
+        playSound();
+        try {
+            promptAsync();
+        }
+        catch (error) {
+            console.error('handleCreateAccount Error:', error);
+        }
+    }
+
+    useEffect(() => {
+        //TODO:" Handle Google OAuth responses"
+        if (response && response.type == 'success') {
+            try {
+                const { id_token } = response.params;
+                const credential = GoogleAuthProvider.credential(id_token);
+                // signInWithCredential(auth, credential)
+                signInWithCredential(credential)
+                    .then((userCredential) => {
+                        console.log('User signed in:', userCredential.uid);
+                        Alert.alert('User signed in1:', userCredential);
+                    })
+            }
+            catch (error) {
+                Alert.alert('Error with Google OAuth11:', error);
+                console.error('Error with Google OAuth:', error);
+            }
+        }
+    }, [response]);
+
+    useEffect(() => {
+        const subscriber = onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                console.log('User is signed inGOOGLE:', user.uid);
+                Alert.alert('User is signed inGOOGLE:', user);
+                setGoogleUserInfo(user);
+            } else {
+                Alert.alert('User NOT GOOGLE');
+                console.log('User is signed out');
+            }
+        });
+        return () => subscriber();
+    }, []);
 
 
     const handleCreateAccount = () => {
@@ -154,11 +209,15 @@ const LoginScreen = () => {
                         <TextInput onChangeText={text => setPassword(text)} style={styles.input} placeholder="Your password" secureTextEntry={true} />
                     </View>
 
-                    <TouchableOpacity onPress={handleSignIn} style={[styles.button, { backgroundColor: '#00CFEB90' }]}>
+                    <TouchableOpacity onPress={() => handleSignIn()} style={[styles.button, { backgroundColor: '#00CFEB90' }]}>
                         <Text style={{ fontSize: 17, fontWeight: '400', color: 'white' }}>Login</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={handleCreateAccount} style={[styles.button, { backgroundColor: '#ec5578' }]}>
+                    <TouchableOpacity onPress={() => handleCreateAccount()} style={[styles.button, { backgroundColor: '#ec5578' }]}>
                         <Text style={{ fontSize: 17, fontWeight: '400', color: 'white' }}>Create Account</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleGoogleOAuth()} style={[styles.button, { backgroundColor: '#ec5578' }]}>
+                        <AntDesign name="google" size={17} color="white" />
+                        <Text style={{ fontSize: 17, fontWeight: '400', color: 'white' }}>Google OAuth</Text>
                     </TouchableOpacity>
                 </View>
             </BlurView>
@@ -173,7 +232,7 @@ export const MyAccount = () => {
 
     return (
         <Stack.Navigator>
-            {currentUser ? (
+            {(currentUser || googleUserInfo) ? (
                 <Stack.Screen name="Logged" component={LoggedScreen}
                     options={{
                         headerShown: false, // Hide the header

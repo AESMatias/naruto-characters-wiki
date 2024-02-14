@@ -20,6 +20,7 @@ export default {
       "supportsTablet": true
     },
     "android": {
+      "bundleIdentifier": "com.aesmatias.narutocharacterswiki",
       "versionCode": 2,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -30,6 +31,7 @@ export default {
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "scheme": "com.aesmatias.narutocharacterswiki",
     "plugins": [
       "expo-router"
     ],

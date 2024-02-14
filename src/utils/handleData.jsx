@@ -1,21 +1,18 @@
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-// import { incrementCounterFavorites } from "../store/slices/CounterSlice";
 import { database } from "../../firebaseConfig.js";
-import { collection, addDoc } from "firebase/firestore";
-import { getDocs } from "firebase/firestore";
 import { doc, setDoc } from "firebase/firestore";
-
 
 export const saveUserPreferences = async (newFavoritesList) => {
     try {
         // Get the user auth data from the AsyncStorage
         const storedData = await AsyncStorage.getItem('auth');
-        const authData = JSON.parse(storedData);
+        const authData = await JSON.parse(storedData);
         // Object to save in the database
         const itemToSave = { auth: authData, favorites: newFavoritesList };
         // Reference to the document with the user's email
         const userDocRef = doc(database, "users", authData.uid);
+        console.log('Con usuario data', newFavoritesList)
         // Save the data in the database
         await setDoc(userDocRef, itemToSave);
         console.log('SaveUserPreferences - data saved successfully for :', authData.uid);
@@ -127,8 +124,8 @@ export const CheckCharsInAsyncStorage = async () => {
         const allKeys = await AsyncStorage.getAllKeys();
         const filteredKeys = allKeys.filter(key => key.startsWith("cachedCharacter"));
         const storedData = await AsyncStorage.multiGet(allKeys);
-        if (allKeys !== null && storedData !== null && filteredKeys.length > 1000) {
-            console.log(' filteredKeys.length > 1000', filteredKeys.length)
+        if (allKeys !== null && storedData !== null && filteredKeys.length > 500) {
+            console.log(' filteredKeys.length > 500', filteredKeys.length)
             const charactersData = storedData.map(([key, value]) => JSON.parse(value));
             return charactersData;
         } else {
@@ -160,7 +157,7 @@ export const retrieveData = async () => {
             // let arrayFiltered = charactersData.filter((char) => (char[0].startsWith("fav_Char_")
             //     && char !== null && char !== undefined));
             let charactersMapped = charsFiltered.map(([key, value]) => JSON.parse(value));
-            console.log('Favorites found in retrieveData/Handle:', charactersMapped);
+            console.log('Favorites found in retrieveData/Handle:');
             return charactersMapped;
         } else {
             // No data was found in AsyncStorage

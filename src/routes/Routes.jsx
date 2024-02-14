@@ -1,5 +1,5 @@
 import react from 'react';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { NavigationContainer, useNavigation, DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -7,7 +7,7 @@ import { Home } from '../views/Home.jsx';
 import { About } from '../views/About.jsx';
 import { SearchBy } from '../views/SearchBy.jsx';
 import { Favorites } from '../views/Favorites.jsx';
-import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, TouchableOpacity, View, useColorScheme } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
@@ -128,7 +128,7 @@ export function Navigator() {
     function StackGroup() {
         return (
             <Stack.Navigator>
-                <Stack.Screen name="Home" component={ButtomTabGroup} options={deletedHeader} />
+                <Stack.Screen name="Home!" component={ButtomTabGroup} options={deletedHeader} />
                 <Stack.Screen name="CharDetails" component={CharDetails} options={deletedHeader} />
             </Stack.Navigator>
         );
@@ -147,7 +147,7 @@ export function Navigator() {
     }
 
     return (
-        <NavigationContainer>
+        <NavigationContainer thee={DarkTheme}>
             {/* <ButtomTabGroup /> */}
             {/* <StackGroup /> */}
             <DrawerGroup />

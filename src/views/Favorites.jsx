@@ -1,15 +1,13 @@
 import {
-    StyleSheet, Text, View, Pressable, Button, Alert, Share, Linking
+    StyleSheet, FlatList, View, Alert
 } from 'react-native'
 import React from 'react'
 import { Modal } from '../components/Modal.jsx'
 import { useState, useEffect } from 'react'
 import { CharModal } from '../components/CharModal.jsx';
-import { FlatList } from 'react-native';
-import { WriteNameComponent } from '../components/WriteNameComponent.jsx';
 import { loadData, retrieveData } from '../utils/handleData.jsx';
 import { Character } from '../components/Character.jsx';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { saveUserPreferences } from '../utils/handleData.jsx';
 
 export const Favorites = () => {
@@ -41,9 +39,15 @@ export const Favorites = () => {
         onChangeText('');
         retrieveData().then((data) => {
             setFavorites(data);
-            console.log('FAVORITES RETRIEVssED 2222', data);
-            console.log('RETRIEVssED 2222', favorites);
             setRefreshing(false);
+            if (currentUser !== null) {
+                Alert.alert('Favorite characters loaded in the cloud!')
+                saveUserPreferences(data);
+            }
+            else {
+                // Alert.alert('You are not logged, your favorites will not be saved on the cloud');
+                console.log('Error at saving user preferences at Favorites.jsx: currentUser is null');
+            }
         });
     }, [refreshing]); // Observe changes in the refresing state
 

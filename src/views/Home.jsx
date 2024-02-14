@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { View, StyleSheet, FlatList, SafeAreaView, Text, Alert } from 'react-native';
+import { View, StyleSheet, FlatList, SafeAreaView, ActivityIndicator, useColorScheme } from 'react-native';
 import { WriteNameComponent } from '../components/WriteNameComponent.jsx';
 import { useEffect, useState } from 'react';
 import { Character } from '../components/Character.jsx';
@@ -11,7 +11,18 @@ import { addToFavorites } from '../store/slices/AccountSlice.jsx';
 import { CheckAuthStorage } from '../../firebaseConfig.js';
 import { setUser } from '../store/slices/AccountSlice.jsx';
 
+
+// import Constants from 'expo-constants';
+
+// const versionCode = JSON.stringify(Constants.expoConfig.android);
+// Alert.alert('Version Code', String(versionCode));
+
+
 export const Home = () => {
+
+
+    const theme = useColorScheme();
+    console.log('The color theme is', theme)
 
     const [refreshing, setRefreshing] = useState(false); // For the FlatList
     const [dataFetched, setdataFetched] = useState([]);
@@ -102,7 +113,7 @@ export const Home = () => {
                 {/* <Text>INSIDE MODAL</Text> */}
             </Modal>
             <View style={styles.flat_container}>
-                <FlatList
+                {dataFetched.length === 0 ? <ActivityIndicator size={100} color="#0000ff" /> : <FlatList
                     data={(dataFetched !== undefined) ?
                         dataFetched.filter((char) => char.name.toLowerCase().includes(text.toLowerCase())) : []
                     }
@@ -116,7 +127,22 @@ export const Home = () => {
                     refreshing={refreshing}
                     onRefresh={refreshing => setRefreshing(!refreshing)}
                     showsVerticalScrollIndicator={false}
-                />
+                />}
+                {/* <FlatList
+                    data={(dataFetched !== undefined) ?
+                        dataFetched.filter((char) => char.name.toLowerCase().includes(text.toLowerCase())) : []
+                    }
+                    keyExtractor={(item) => item.id.toString()}
+                    renderItem={({ item }) => <Character
+                        charData={item}
+                        setcharModal={setcharModal}
+                        setFilledModal={setFilledModal}
+                    />}
+                    style={styles.char_list}
+                    refreshing={refreshing}
+                    onRefresh={refreshing => setRefreshing(!refreshing)}
+                    showsVerticalScrollIndicator={false}
+                /> */}
             </View>
             <WriteNameComponent setdataFetched={setdataFetched} onChangeText={onChangeText} text={text} />
         </SafeAreaView>
@@ -127,6 +153,7 @@ export const Home = () => {
 const styles = StyleSheet.create({
     flat_container: {
         flex: 1,
+        justifyContent: 'center',
         paddingTop: 10,
         width: '100%',
         marginBottom: 0,

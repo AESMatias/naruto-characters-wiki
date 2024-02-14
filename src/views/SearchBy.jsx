@@ -1,11 +1,8 @@
 import {
-    StyleSheet, Text, View, Pressable, Button, Alert, Share, Linking
+    StyleSheet, Text, View
 } from 'react-native'
 import React, { useEffect } from 'react'
-import { Modal } from '../components/Modal.jsx'
 import { useState } from 'react'
-import { FontAwesome } from '@expo/vector-icons';
-
 export const SearchBy = () => {
 
     const [progress, setProgress] = useState(0);

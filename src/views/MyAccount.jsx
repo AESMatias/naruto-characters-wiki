@@ -4,9 +4,7 @@ import {
 import React from 'react'
 import { useState } from 'react'
 import { BlurView } from 'expo-blur';
-import {
-    getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut
-} from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { app } from '../../firebaseConfig.js';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
@@ -14,27 +12,15 @@ import 'firebase/firestore';
 import { useSelector, useDispatch } from 'react-redux';
 import { setUser, clearUser } from '../store/slices/AccountSlice.jsx';
 import _ from 'lodash';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { setPersistence } from 'firebase/auth';
 import { setAuthStorage, logOutStorage } from '../utils/setAuthData.jsx';
 import { playSound } from '../utils/tapSound.jsx';
+import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
-const auth = getAuth(app);
-// setPersistence(auth, AsyncStorage)
-//     .then(() => {
-//         // Existing and future Auth states are now persisted in the current
-//         // session only. Closing the window would clear any existing state even
-//         // if a user forgets to sign out.
-//         // ...
-//     })
-//     .catch((error) => {
-//         // Handle Errors here.
-//         const errorCode = error.code;
-//         const errorMessage = error.message;
-//         Alert.alert('Error', errorMessage);
-//     }); setPersistence(auth, AsyncStorage);
-// Alert.alert('Firebase initialized, session>', auth.currentUser)
 
+const auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+});
 
 const LoggedScreen = () => {
     const { currentUser } = useSelector((state) => state.userReducer);

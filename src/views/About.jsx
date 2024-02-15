@@ -50,7 +50,7 @@ export const About = () => {
 
     return (
         <View style={styles.background}>
-            <Text style={styles.text}>Hello {currentUser ? currentUser : `Anonymous`}</Text>
+            <Text style={styles.text}>Hello {currentUser ? JSON.parse(currentUser).email : `Anonymous`}</Text>
             <Text style={styles.text}>Made by Wholeheartedly</Text>
 
             <View style={styles.container}>

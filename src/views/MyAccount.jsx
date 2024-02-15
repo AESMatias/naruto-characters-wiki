@@ -41,7 +41,7 @@ const LoggedScreen = () => {
         <View style={styles.background}>
             <StatusBar style='auto' />
             <Text style={styles.text}>You are logged in as: </Text>
-            <Text style={styles.text}>{currentUser ? currentUser : 'Not Logged'}</Text>
+            <Text style={styles.text}>{currentUser ? JSON.parse(currentUser).email : 'Not Logged'}</Text>
             <TouchableOpacity
                 style={styles.button}
                 onPress={() => { handleLogOut(navigation, currentUser) }}>
@@ -57,7 +57,7 @@ const handleLogOut = async (navigation, currentUser) => {
     logOutStorage();
     await signOut(auth);
     dispatch(clearUser());
-    console.log(currentUser, 'User signed out');
+    console.log('User signed out');
     // navigation.navigate('Login');
 }
 
@@ -114,20 +114,22 @@ const LoginScreen = () => {
 
 
     auth.onAuthStateChanged((user) => {
+
+        console.warn('teh current user is ', user, typeof user)
+        console.warn('teh current user is STRING ', JSON.parse(user))
         if (user) {
             // setPersistence(auth, AsyncStorage);
             // navigation.navigate('Logged');
-            setIsLogged(true);
             setAuthStorage(user);
+            setIsLogged(true);
             console.log('onAuthStateChanged:', user.email, 'is logged')
         } else {
             // navigation.navigate('Login');
+            console.error('CAMBIO EL ESTADO Y NO HAY USUARIOOO');
             dispatch(clearUser());
             setIsLogged(false);
         }
     });
-
-
 
     const handleGoogleOAuth = () => {
         playSound();
@@ -144,6 +146,7 @@ const LoginScreen = () => {
             Alert.alert('Sorry, Google OAuth will be available in the next update.');
         }
     }
+
     const handleSignInWithGoogle = async () => {
         const user = checkGoogleLocalUser();
         if (!user) {
@@ -198,8 +201,8 @@ const LoginScreen = () => {
             .then((userCredential) => {
                 const user = userCredential.user;
                 // navigation.navigate('Logged');
-                dispatch(setUser(user.email)); // TODO:
-                console.log(currentUser + 'UserReducer')
+                // dispatch(setUser(user.email)); // TODO:
+                dispatch(setUser(JSON.stringify(user)));
             })
             .catch((error) => {
                 const errorCode = error.code;
@@ -276,7 +279,7 @@ export const MyAccount = () => {
     return (
         <Stack.Navigator>
             {/* {(currentUser) ? ( */}
-            {(currentUser) ? (
+            {(currentUser && currentUser !== undefined && currentUser !== null) ? (
                 <Stack.Screen name="Logged" component={LoggedScreen}
                     options={{
                         headerShown: false, // Hide the header

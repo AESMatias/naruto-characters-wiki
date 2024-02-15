@@ -1,5 +1,5 @@
 import {
-    StyleSheet, FlatList, View, Alert
+    StyleSheet, FlatList, View, Alert, Text
 } from 'react-native'
 import React from 'react'
 import { Modal } from '../components/Modal.jsx'
@@ -9,6 +9,9 @@ import { loadData, retrieveData } from '../utils/handleData.jsx';
 import { Character } from '../components/Character.jsx';
 import { useSelector } from 'react-redux';
 import { saveUserPreferences } from '../utils/handleData.jsx';
+import { updateFavoritesLength } from '../utils/handleData.jsx';
+import { incrementCounterFavorites } from '../store/slices/AccountSlice.jsx';
+import { useDispatch } from 'react-redux';
 
 export const Favorites = () => {
 
@@ -21,27 +24,29 @@ export const Favorites = () => {
 
     const { currentUser } = useSelector((state) => state.userReducer);
 
-    useEffect(() => {
-        // loadData(setdataFetched);
-        retrieveData().then((data) => {
-            setFavorites(data);
-            if (currentUser !== null) {
-                saveUserPreferences(data);
-            }
-            else {
-                console.log('Error at saving user preferences at Favorites.jsx: currentUser is null');
-            }
-        });
-    }, []); // Started when the component is mounted
+    // useEffect(() => {
+    //     // loadData(setdataFetched);
+    //     retrieveData().then((data) => {
+    //         setFavorites(data);
+    //         if (currentUser !== null) {
+    //             saveUserPreferences(data);
+    //         }
+    //         else {
+    //             console.log('Error at saving user preferences at Favorites.jsx: currentUser is null');
+    //         }
+    //     });
+    // }, []); // Started when the component is mounted
 
+    // dispatch = useDispatch();
+    // updateFavoritesLength(incrementCounterFavorites, dispatch, currentUser);
 
     useEffect(() => {
         onChangeText('');
-        retrieveData().then((data) => {
+        retrieveData(currentUser).then((data) => {
             setFavorites(data);
             setRefreshing(false);
             if (currentUser !== null) {
-                Alert.alert('Favorite characters loaded in the cloud!')
+                // Alert.alert('Favorite characters has been uploaded to the cloud!')
                 saveUserPreferences(data);
             }
             else {
@@ -49,9 +54,13 @@ export const Favorites = () => {
                 console.log('Error at saving user preferences at Favorites.jsx: currentUser is null');
             }
         });
+
+        // updateFavoritesLength(incrementCounterFavorites, dispatch, currentUser);
+
     }, [refreshing]); // Observe changes in the refresing state
 
     return (
+
         <View style={styles.container}>
 
             {/* {favorites.length > 0 ? <Text>favorites</Text> :
@@ -69,23 +78,26 @@ export const Favorites = () => {
                 {/* <Text>INSIDE MODAL</Text> */}
             </Modal>
             <View style={styles.flat_container}>
-                <FlatList
-                    data={(favorites !== undefined) ?
-                        favorites : []
-                    }
-                    //parseamos lo de keystractor ya que es un objeto
-                    // keyExtractor={(item) => item.id.toString()}
-                    keyExtractor={(item) => (item.id.toString())}
-                    renderItem={({ item }) => <Character
-                        charData={item}
-                        setcharModal={setcharModal}
-                        setFilledModal={setFilledModal}
-                    />}
-                    style={styles.char_list}
-                    refreshing={refreshing}
-                    onRefresh={refreshing => setRefreshing(!refreshing)}
-                    showsVerticalScrollIndicator={false}
-                />
+                {currentUser ? (
+                    <FlatList
+                        data={(favorites !== undefined) ?
+                            favorites : []
+                        }
+                        //parseamos lo de keystractor ya que es un objeto
+                        // keyExtractor={(item) => item.id.toString()}
+                        keyExtractor={(item) => (item.id.toString())}
+                        renderItem={({ item }) => <Character
+                            charData={item}
+                            setcharModal={setcharModal}
+                            setFilledModal={setFilledModal}
+                        />}
+                        style={styles.char_list}
+                        refreshing={refreshing}
+                        onRefresh={refreshing => setRefreshing(!refreshing)} />) :
+                    <View style={styles.flat_container}>
+                        <Text style={{ fontSize: 25, color: 'white', alignSelf: 'center', }}>Log in to see your favorites</Text>
+                    </View>
+                }
             </View>
             {/* <WriteNameComponent setdataFetched={setdataFetched} onChangeText={onChangeText} text={text} /> */}
         </View>

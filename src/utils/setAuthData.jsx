@@ -5,7 +5,8 @@ export const setAuthStorage = async (userData) => {
         // Delete the previous element, if it exists
         await AsyncStorage.removeItem('auth');
         // Save the new element as a JSON object
-        await AsyncStorage.setItem('auth', JSON.stringify(userData));
+        stringUserData = JSON.stringify(userData);
+        await AsyncStorage.setItem('auth', stringUserData);
 
     } catch (error) {
         console.error('Error at checkAuthStorage', error);
@@ -16,7 +17,7 @@ export const logOutStorage = async (userData) => {
     try {
         // Delete the previous session, if it exists
         await AsyncStorage.removeItem('auth');
-        console.log('auth ' + userData + ' deleted')
+        console.log('auth ' + ' deleted')
     } catch (error) {
         console.error('Error at checkAuthStorage', error);
     }

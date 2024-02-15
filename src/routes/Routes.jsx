@@ -28,22 +28,26 @@ import { Image } from 'react-native';
 // Navigator
 export function Navigator() {
 
-    dispatch = useDispatch();
-    updateFavoritesLength(incrementCounterFavorites, dispatch);
+    // dispatch = useDispatch();
+    // updateFavoritesLength(incrementCounterFavorites, dispatch);
 
     //TODO: The two lines below produces different result...
+    // const { counterFavorites } = useSelector(state => state.userReducer);
+    const dispatch = useDispatch();
+    const { currentUser } = useSelector((state) => state.userReducer);
     const { counterFavorites } = useSelector(state => state.userReducer);
-    // const counterFavorites = useSelector(state => state.userReducer.counterFavorites);
 
-    // const counterFavoritesHandler = () => {
-    //     updateFavoritesLength(incrementCounterFavorites, dispatch);
-    //     const counterFavorites = useSelector(state => state.userReducer.counterFavorites);
-    //     setInterval(() => {
-    //         // Alert.alert('Counter Favorites', counterFavorites.toString());
-    //         updateFavoritesLength(incrementCounterFavorites, dispatch);
-    //     }, 5000);
-    //     return counterFavorites;
-    // };
+    let counterFavoritesReturned = null;
+
+    updateFavoritesLength(incrementCounterFavorites, dispatch, currentUser)
+        .then((length) => {
+            counterFavoritesReturned = length;
+        })
+        .catch((error) => {
+            console.error('Error obtaining the length of the favorites', error);
+            counterFavoritesReturned = null;
+        });
+
 
     const favOptions = {
         tabBarLabel: 'Favorites',

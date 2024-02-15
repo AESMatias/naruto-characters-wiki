@@ -1,7 +1,8 @@
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { database } from "../../firebaseConfig.js";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { Alert } from "react-native";
 
 export const saveUserPreferences = async (newFavoritesList) => {
     try {
@@ -12,7 +13,7 @@ export const saveUserPreferences = async (newFavoritesList) => {
         const itemToSave = { auth: authData, favorites: newFavoritesList };
         // Reference to the document with the user's email
         const userDocRef = doc(database, "users", authData.uid);
-        console.log('Con usuario data', newFavoritesList)
+        // console.log('With user data', newFavoritesList)
         // Save the data in the database
         await setDoc(userDocRef, itemToSave);
         console.log('SaveUserPreferences - data saved successfully for :', authData.uid);
@@ -24,15 +25,18 @@ export const saveUserPreferences = async (newFavoritesList) => {
 
 
 
-export const updateFavoritesLength = async (incrementCounterFavorites, dispatch) => {
+export const updateFavoritesLength = async (incrementCounterFavorites, dispatch, currentUser) => {
     try {
-        const data = await retrieveData();
+        const data = await retrieveData(currentUser);
         const dataArray = Object.values(data);
         const favoritesLength = dataArray.length;
         dispatch(incrementCounterFavorites(favoritesLength));
         // const memoizedIncrementCounter = useMemo(() => dispatch(incrementCounterFavorites), [dispatch]);
+        console.warn('FAV Length:', favoritesLength);
+        return favoritesLength;
     } catch (error) {
         console.error('FAV Error retrieving favorites length:', error);
+        return 0;
     }
 };
 
@@ -74,8 +78,37 @@ export const setNoFavChars = async (setdataFetched, data) => {
     setdataFetched(storedDataMapped);
 }
 
+export const checkFirebaseFavs = async (currentUser) => {
+
+    if (currentUser === null) {
+        return null;
+    }
+    try {
+        // Reference to the document in Firebase
+        const docRef = doc(database, "users", JSON.parse(currentUser).uid);
+
+        // Get the document snapshot
+        const docSnap = await getDoc(docRef);
+
+        // Check if the document exists
+        if (docSnap.exists()) {
+            // Extract data from the document snapshot
+            const data = docSnap.data();
+            return data;
+        } else {
+            console.log("No such document!");
+            return null;
+        }
+    } catch (error) {
+        console.error("Error getting document:", error);
+        return null;
+    }
+}
+
 export const loadData = async (setdataFetched, setFavoritesTemp) => {
     // This function loads the data rather from the API or from the AsyncStorage
+    // But firrst, we check the firebase database
+
     CheckCharsInAsyncStorage().then((data) => {
         if (data !== null) {
             // setdataFetched(data);
@@ -139,33 +172,43 @@ export const CheckCharsInAsyncStorage = async () => {
     }
 }
 
-export const retrieveData = async () => {
+export const retrieveData = async (currentUser) => {
+
+    //If the data is not found in firestone database, we retrieve it from the AsyncStorage
+    firebaseData = await checkFirebaseFavs(currentUser.auth);
+
     let arrayOfFavsChars = [];
-    try {
-        const allKeys = await AsyncStorage.getAllKeys();
-        const storedData = await AsyncStorage.multiGet(allKeys);
+    if (firebaseData !== null) {
+        // Alert.alert('The data was found in firestone!')
+        // console.warn("Document data:", firebaseData.favorites);
+        return firebaseData.favorites;
+    } else {
+        // Alert.alert('NO FIRESTONE DATA')
+        try {
+            const allKeys = await AsyncStorage.getAllKeys();
+            const storedData = await AsyncStorage.multiGet(allKeys);
 
-        storedData.forEach((item) => {
-            // console.log('item', item)
-            arrayOfFavsChars.push(item)
-        })
+            storedData.forEach((item) => {
+                arrayOfFavsChars.push(item)
+            })
 
-        if (allKeys !== null && storedData !== null) {
-            let charsFiltered = arrayOfFavsChars.filter((char) => (char[0].startsWith("fav_Char_")
-                && char !== null && char !== undefined));
-            // console.log('asdsadasd ASDFASDSA:', charactersData);
-            // let arrayFiltered = charactersData.filter((char) => (char[0].startsWith("fav_Char_")
-            //     && char !== null && char !== undefined));
-            let charactersMapped = charsFiltered.map(([key, value]) => JSON.parse(value));
-            console.log('Favorites found in retrieveData/Handle:');
-            return charactersMapped;
-        } else {
-            // No data was found in AsyncStorage
-            console.log('No Fav data was found in AsyncStorage')
+            if (allKeys !== null && storedData !== null && arrayOfFavsChars.length > 0) {
+                let charsFiltered = arrayOfFavsChars.filter((char) => (char[0].startsWith("fav_Char_")
+                    && char !== null && char !== undefined));
+                // console.log('asdsadasd ASDFASDSA:', charactersData);
+                // let arrayFiltered = charactersData.filter((char) => (char[0].startsWith("fav_Char_")
+                //     && char !== null && char !== undefined));
+                let charactersMapped = charsFiltered.map(([key, value]) => JSON.parse(value));
+                console.log('Favorites found in retrieveData/Handle:');
+                return charactersMapped;
+            } else {
+                // No data was found in AsyncStorage
+                console.log('No Fav data was found in AsyncStorage')
+                return null;
+            }
+        } catch (error) {
+            console.error('Error retrieving in Fav retrieveData - fetCharsData.jsx :', error);
             return null;
         }
-    } catch (error) {
-        console.error('Error retrieving in Fav retrieveData - fetCharsData.jsx :', error);
-        return null;
     }
 }

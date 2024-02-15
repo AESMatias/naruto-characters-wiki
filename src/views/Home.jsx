@@ -68,8 +68,8 @@ export const Home = () => {
     // }
     CheckAuthStorage().then((data) => {
         if (data !== null) {
-            dispatch(setUser(data.email));
-            console.log('User/Auth Data was found in AsyncStorage:', data);
+            dispatch(setUser(JSON.stringify(data)));
+            console.log('User/Auth Data was found in AsyncStorage:');
         } else {
             console.log('No data was found in AsyncStorage at loadData/handleData.jsx');
         }
@@ -81,19 +81,13 @@ export const Home = () => {
 
 
     useEffect(() => {
-        console.log('FAVORITES AAAAAAAAAAAAAAAAAAAA', favoritesTemp);
         favoritesTemp.forEach((char) => {
             dispatch(addToFavorites(char));
-            console.log('AAA Add to favorites:', char);
-            console.log('AAA 222222:', favoritesTemp);
+            // console.log('AAA Add to favorites:', char);
+            // console.log('AAA 222222:', favoritesTemp);
         });
     }, []);
 
-    // useEffect(() => {
-    //     console.log('STORE FAVORITES 555 aaaaaaaaaaaaaaaaaaa', favorites);
-    // }
-
-    //     , [favorites]);
 
     useEffect(() => {
         console.log('Refreshing the home, but nothing happend...')
@@ -128,25 +122,10 @@ export const Home = () => {
                     onRefresh={refreshing => setRefreshing(!refreshing)}
                     showsVerticalScrollIndicator={true}
                     maxToRenderPerBatch={20} // Render 50 elements per batch
-                    initialNumToRender={20} // Renderiza 100 elements when the component is mounted
-                    windowSize={20} // Mantiene todos los elementos en memoria mientras el usuario se desplaza
-                    removeClippedSubviews={false} // No elimina los elementos fuera de la vista del árbol de elementos
+                    initialNumToRender={20} // Render 100 elements when the component is mounted
+                    windowSize={20} // Hold 20 elements in memory
+                    removeClippedSubviews={true} // Not render elements that are not in the screen
                 />}
-                {/* <FlatList
-                    data={(dataFetched !== undefined) ?
-                        dataFetched.filter((char) => char.name.toLowerCase().includes(text.toLowerCase())) : []
-                    }
-                    keyExtractor={(item) => item.id.toString()}
-                    renderItem={({ item }) => <Character
-                        charData={item}
-                        setcharModal={setcharModal}
-                        setFilledModal={setFilledModal}
-                    />}
-                    style={styles.char_list}
-                    refreshing={refreshing}
-                    onRefresh={refreshing => setRefreshing(!refreshing)}
-                    showsVerticalScrollIndicator={false}
-                /> */}
             </View>
             <WriteNameComponent setdataFetched={setdataFetched} onChangeText={onChangeText} text={text} />
         </SafeAreaView>

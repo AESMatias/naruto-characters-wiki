@@ -21,6 +21,10 @@ import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import { GoogleAuthProvider, onAuthStateChanged, signInWithCredential } from 'firebase/auth';
 import { getAuth } from 'firebase/auth';
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry.js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { StatusBar } from 'expo-status-bar';
+
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -35,6 +39,7 @@ const LoggedScreen = () => {
 
     return (
         <View style={styles.background}>
+            <StatusBar style='auto' />
             <Text style={styles.text}>You are logged in as: </Text>
             <Text style={styles.text}>{currentUser ? currentUser : 'Not Logged'}</Text>
             <TouchableOpacity
@@ -47,10 +52,10 @@ const LoggedScreen = () => {
 
 }
 
-const handleLogOut = (navigation, currentUser) => {
+const handleLogOut = async (navigation, currentUser) => {
     playSound();
     logOutStorage();
-    signOut(auth);
+    await signOut(auth);
     dispatch(clearUser());
     console.log(currentUser, 'User signed out');
     // navigation.navigate('Login');
@@ -74,6 +79,40 @@ const LoginScreen = () => {
 
     const navigation = useNavigation();
 
+    const checkGoogleLocalUser = async () => {
+
+        try {
+            const userData = await AsyncStorage.getItem('@Gauth');
+            const formattedUser = await JSON.parse(userData);
+
+            if (formattedUser !== null) {
+                return formattedUser;
+                console.log('Google User is logged in:', formattedUser);
+            }
+        } catch (error) {
+            console.error('Error at checkAuthStorage', error);
+            return null;
+        }
+    };
+    const saveGoogleLocalUser = async (token) => {
+        if (!token) return null;
+        try {
+            const response = await fetch(`https://www.googleapis.com/userinfo/v2/me`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+            const userInfo = await response.json();
+            await AsyncStorage.setItem('@Gauth', JSON.stringify(userInfo));
+            setGoogleUserInfo(userInfo);
+        } catch (error) {
+            console.error('Error at checkAuthStorage', error);
+            return null;
+        }
+    };
+
+
     auth.onAuthStateChanged((user) => {
         if (user) {
             // setPersistence(auth, AsyncStorage);
@@ -92,32 +131,33 @@ const LoginScreen = () => {
 
     const handleGoogleOAuth = () => {
         playSound();
-        try {
-            promptAsync();
+        if (password === 'test') {
+            try {
+                console.log('promptAsync:', promptAsync);
+                promptAsync();
+                console.log('response:', response);
+            }
+            catch (error) {
+                console.error('handleCreateAccount Error:', error);
+            }
+        } else {
+            Alert.alert('Sorry, Google OAuth will be available in the next update.');
         }
-        catch (error) {
-            console.error('handleCreateAccount Error:', error);
+    }
+    const handleSignInWithGoogle = async () => {
+        const user = checkGoogleLocalUser();
+        if (!user) {
+            console.log(' no hay user y la response es:', response)
+            if (response && response.type === 'success') {
+                saveGoogleLocalUser(response.authentication.accessToken);
+            }
+        } else {
+            setGoogleUserInfo(user);
         }
     }
 
     useEffect(() => {
-        //TODO:" Handle Google OAuth responses"
-        if (response && response.type == 'success') {
-            try {
-                const { id_token } = response.params;
-                const credential = GoogleAuthProvider.credential(id_token);
-                // signInWithCredential(auth, credential)
-                signInWithCredential(credential)
-                    .then((userCredential) => {
-                        console.log('User signed in:', userCredential.uid);
-                        Alert.alert('User signed in1:', userCredential);
-                    })
-            }
-            catch (error) {
-                Alert.alert('Error with Google OAuth11:', error);
-                console.error('Error with Google OAuth:', error);
-            }
-        }
+        handleSignInWithGoogle();
     }, [response]);
 
     useEffect(() => {
@@ -181,6 +221,7 @@ const LoginScreen = () => {
 
     return (
         < View style={styles.background} >
+            <StatusBar style='auto' />
             {/* < Image source={require('../assets/logo.png')} style={[styles.image, StyleSheet.absoluteFill]} /> */}
             {/* <View style={styles.backgroundObject}></View> */}
             {/* <ScrollView contentContainerStyle={{
@@ -215,9 +256,11 @@ const LoginScreen = () => {
                     <TouchableOpacity onPress={() => handleCreateAccount()} style={[styles.button, { backgroundColor: '#ec5578' }]}>
                         <Text style={{ fontSize: 17, fontWeight: '400', color: 'white' }}>Create Account</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => handleGoogleOAuth()} style={[styles.button, { backgroundColor: '#ec5578' }]}>
-                        <AntDesign name="google" size={17} color="white" />
-                        <Text style={{ fontSize: 17, fontWeight: '400', color: 'white' }}>Google OAuth</Text>
+                    <TouchableOpacity onPress={() => handleGoogleOAuth()} style={[styles.button, { backgroundColor: 'black' }]}>
+                        <View style={{ flex: 1, flexDirection: 'row', padding: 3 }}>
+                            <AntDesign name="google" size={15} color="yellow" style={{ margin: 2 }} />
+                            <Text style={{ fontSize: 17, fontWeight: '400', color: 'white' }}>Google OAuth</Text>
+                        </View>
                     </TouchableOpacity>
                 </View>
             </BlurView>
@@ -232,7 +275,8 @@ export const MyAccount = () => {
 
     return (
         <Stack.Navigator>
-            {(currentUser || googleUserInfo) ? (
+            {/* {(currentUser) ? ( */}
+            {(currentUser) ? (
                 <Stack.Screen name="Logged" component={LoggedScreen}
                     options={{
                         headerShown: false, // Hide the header
@@ -282,6 +326,7 @@ const styles = StyleSheet.create({
         marginVertical: 5,
         borderColor: '#fff',
         borderWidth: 1,
+        backgroundColor: 'rgba(100, 100, 100, 0.5)',
 
     },
     loginContainer: {
@@ -366,6 +411,8 @@ const styles = StyleSheet.create({
     },
     textButton: {
         fontSize: 18,
+        fontWeight: 'bold',
+        color: 'white',
     },
     input: {
         backgroundColor: 'rgba(0,0,0,0.3)',

@@ -33,6 +33,7 @@ export default {
     },
     "scheme": "com.aesmatias.narutocharacterswiki",
     "plugins": [
+      "expo-font", // Agrega "expo-font" a la lista de plugins
       "expo-router"
     ],
     "environmentVars": {

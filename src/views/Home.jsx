@@ -103,7 +103,7 @@ export const Home = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <StatusBar style="auto" />
+            <StatusBar style='auto' />
             <Modal id='modal_id' isModalOpen={charModal} favoritesTemp={favoritesTemp}
                 setFavoritesTemp={setFavoritesTemp}
                 withInput
@@ -126,7 +126,11 @@ export const Home = () => {
                     style={styles.char_list}
                     refreshing={refreshing}
                     onRefresh={refreshing => setRefreshing(!refreshing)}
-                    showsVerticalScrollIndicator={false}
+                    showsVerticalScrollIndicator={true}
+                    maxToRenderPerBatch={20} // Render 50 elements per batch
+                    initialNumToRender={20} // Renderiza 100 elements when the component is mounted
+                    windowSize={20} // Mantiene todos los elementos en memoria mientras el usuario se desplaza
+                    removeClippedSubviews={false} // No elimina los elementos fuera de la vista del árbol de elementos
                 />}
                 {/* <FlatList
                     data={(dataFetched !== undefined) ?

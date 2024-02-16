@@ -7,10 +7,10 @@ import { loadData } from '../utils/handleData.jsx'
 import { CharModal } from '../components/CharModal.jsx'
 import { Modal } from '../components/Modal.jsx'
 import { useDispatch, useSelector } from 'react-redux';
-import { addToFavorites } from '../store/slices/AccountSlice.jsx';
+import { addToFavorites, setUser } from '../store/slices/AccountSlice.jsx';
 import { CheckAuthStorage } from '../../firebaseConfig.js';
-import { setUser } from '../store/slices/AccountSlice.jsx';
-
+import { saveUserPreferences } from '../utils/handleData.jsx';
+import { checkFirebaseFavs } from '../utils/handleData.jsx';
 
 // import Constants from 'expo-constants';
 
@@ -50,7 +50,8 @@ export const Home = () => {
 
     const dispatch = useDispatch();
     const { favorites } = useSelector(state => state.userReducer);
-
+    const { currentUser } = useSelector((state) => state.userReducer);
+    const { firebaseFavoritesFetched } = useSelector((state) => state.userReducer);
 
     // const handleAddFav = () => {
     //     playSound();
@@ -76,17 +77,23 @@ export const Home = () => {
     });
 
     useEffect(() => {
-        loadData(setdataFetched, setFavoritesTemp);
+        loadData(setdataFetched, dispatch, currentUser);
+
+        favoritesTemp.forEach((char) => {
+            dispatch(addToFavorites(char, favorites));
+            console.error('AAA Add to favorites TEMP:', char);
+            // console.log('AAA 222222:', favoritesTemp);
+        });
     }, []); // Started when the component is mounted
 
 
-    useEffect(() => {
-        favoritesTemp.forEach((char) => {
-            dispatch(addToFavorites(char));
-            // console.log('AAA Add to favorites:', char);
-            // console.log('AAA 222222:', favoritesTemp);
-        });
-    }, []);
+    // useEffect(() => {
+    //     favoritesTemp.forEach((char) => {
+    //         dispatch(addToFavorites(char));
+    //         console.warn('AAA Add to favorites:', char);
+    //         // console.log('AAA 222222:', favoritesTemp);
+    //     });
+    // }, []);
 
 
     useEffect(() => {
@@ -95,15 +102,70 @@ export const Home = () => {
     }, [refreshing]); // Observe changes in the refresing state
 
 
+
+    useEffect(() => {
+        // console.error('FIREBASEEEEEEEEEEEEEE', firebaseFavoritesFetched)
+        if (firebaseFavoritesFetched == true && currentUser !== null) {
+            // console.error('11111111CAMBIOOO IO O O OFAVORITES', favorites)
+            // // console.error('1111111', favoritesTemp)
+            // // console.error('3333333333', [...favoritesTemp, charData])
+
+
+            // saveUserPreferences(favorites);
+            handleAddFav()
+
+        } else {
+            console.error('EFFECT FAIL', firebaseFavoritesFetched, currentUser)
+        }
+
+    }, [favorites]);
+
+
+
+    const handleAddFav = async () => {
+
+        playSound();
+        try {
+            // firebaseData = [];
+            firebaseData = await checkFirebaseFavs(currentUser);
+            console.error('FAVORITES IN FIREBASEDATA AGREGANDOOO', firebaseData.favorites)
+
+            setFavoritesTemp([...firebaseData.favorites, favorites])
+            // console.error('FAVORITES aaaaaaaa111', favorites)
+            dispatch(addToFavorites(charData)); //TODO: Fix this // Redux
+            // toStoreFavChar(charData); // Local storage
+            // setFavorites(charData); // Local state TODO:" This need the previus state first
+
+            // FavoritesLengthUpdater(dispatch);
+            // console.error('CHARDATA ADDED TO FAVS:', charData.name);
+
+            // console.error('favorites changed', favorites)
+            // saveUserPreferences(favorites);
+
+            // console.error('favorites afterRRRRRRRRRRRRRRRRRRRR', favorites)
+        } catch (error) {
+            console.log('Error adding to favorites in dispatch at CharModal.jsx', error);
+        }
+    }
+
+
+
+
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar style='auto' />
-            <Modal id='modal_id' isModalOpen={charModal} favoritesTemp={favoritesTemp}
+            <Modal id='modal_id' isModalOpen={charModal}
+                favoritesTemp={favoritesTemp}
                 setFavoritesTemp={setFavoritesTemp}
                 withInput
                 FilledModal={[FilledModal]}
                 onRequestClose={() => setcharModal(false)}>
-                <CharModal charData={FilledModal} setcharModal={setcharModal} />
+                <CharModal charData={FilledModal}
+                    // favorites={favorites}
+                    setcharModal={setcharModal}
+                    setFavoritesTemp={setFavoritesTemp}
+                    favoritesTemp={favoritesTemp}
+                />
                 {/* <Text>INSIDE MODAL</Text> */}
             </Modal>
             <View style={styles.flat_container}>

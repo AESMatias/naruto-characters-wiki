@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { Alert } from 'react-native';
 
 const userSlice = createSlice({
     name: 'user',
@@ -7,6 +8,7 @@ const userSlice = createSlice({
         isLoading: false,
         error: null,
         favorites: [], // Array of favorite characters
+        firebaseFavoritesFetched: false, // Flag to know if the favorites characters were fetched from firebase
         counterFavorites: 0, // Counter for the number of favorites characters
         token: null, // Token of firebase authentication
     },
@@ -25,10 +27,14 @@ const userSlice = createSlice({
             state.currentUser = null;
         },
         addToFavorites: (state, action) => {
-            const itemId = action.payload;
+            const newItem = action.payload;
+            console.warn('newitem', newItem)
             // Verifies if the item is already in the favorites array
-            if (!state.favorites.includes(itemId)) {
-                state.favorites.push(itemId);
+            if (!state.favorites.includes(newItem)) {
+                state.favorites.push(newItem);
+
+            } else {
+                console.error('incorrect slice')
             }
         },
         removeFromFavorites: (state, action) => {
@@ -38,11 +44,15 @@ const userSlice = createSlice({
         incrementCounterFavorites: (state, action) => {
             state.counterFavorites = action.payload;
         },
+        setFirebaseFavoritesFetched: (state, action) => {
+            state.firebaseFavoritesFetched = action.payload;
+        },
     },
 });
 
 export const { setUser, setLoading, setError, clearUser,
-    addToFavorites, removeFromFavorites, incrementCounterFavorites } = userSlice.actions;
+    addToFavorites, removeFromFavorites, incrementCounterFavorites,
+    setFirebaseFavoritesFetched } = userSlice.actions;
 
 // export const selectCurrentUser = (state) => state.user.currentUser;
 

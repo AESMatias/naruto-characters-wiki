@@ -53,12 +53,13 @@ const LoggedScreen = () => {
 }
 
 const handleLogOut = async (navigation, currentUser) => {
+    navigation.navigate('Login');
     playSound();
     logOutStorage();
     await signOut(auth);
     dispatch(clearUser());
-    console.log('User signed out');
-    // navigation.navigate('Login');
+    console.log('User signed out, NOW EL CURRENT USER IS ', currentUser);
+    navigation.navigate('Login');
 }
 
 const LoginScreen = () => {
@@ -115,20 +116,20 @@ const LoginScreen = () => {
 
     auth.onAuthStateChanged((user) => {
 
-        console.warn('teh current user is ', user, typeof user)
-        console.warn('teh current user is STRING ', JSON.parse(user))
+        // console.warn('teh current user is ', user, typeof user)
+
         if (user) {
             // setPersistence(auth, AsyncStorage);
             // navigation.navigate('Logged');
             setAuthStorage(user);
             setIsLogged(true);
-            console.log('onAuthStateChanged:', user.email, 'is logged')
         } else {
             // navigation.navigate('Login');
-            console.error('CAMBIO EL ESTADO Y NO HAY USUARIOOO');
+            // console.error('THE onAuthStateChanged is not working properly, the user is not logged in.');
             dispatch(clearUser());
             setIsLogged(false);
         }
+        // console.log('onAuthStateChanged:', user.email);
     });
 
     const handleGoogleOAuth = () => {
@@ -166,12 +167,10 @@ const LoginScreen = () => {
     useEffect(() => {
         const subscriber = onAuthStateChanged(auth, async (user) => {
             if (user) {
-                console.log('User is signed inGOOGLE:', user.uid);
-                Alert.alert('User is signed inGOOGLE:', user);
+                console.log('User is signed in with GOOGLE:', user.uid);
                 setGoogleUserInfo(user);
             } else {
-                Alert.alert('User NOT GOOGLE');
-                console.log('User is signed out');
+                console.log('User NOT LOGGED WITH GOOGLE');
             }
         });
         return () => subscriber();
@@ -190,7 +189,7 @@ const LoginScreen = () => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
                 console.log('Error creating user:', errorMessage, 'Code:', errorCode);
-                Alert.alert('Error creating user:', errorMessage, email, password, 'a');
+                Alert.alert('Error creating user:', errorMessage, 'Code:', errorCode);
 
             });
     }

@@ -16,9 +16,18 @@ import { Share, Alert } from 'react-native';
 import { toRemoveFavChar } from '../utils/handleData.jsx'
 import { useFonts } from 'expo-font';
 import { Roboto } from '@expo-google-fonts/inter'
+import { checkFirebaseFavs } from '../utils/handleData.jsx';
+import { saveUserPreferences } from '../utils/handleData.jsx';
+import { incrementCounterFavorites } from '../store/slices/AccountSlice.jsx';
+import { updateFavoritesLength } from '../utils/handleData.jsx';
+
+
+
+
 
 export const CharDetails = ({ charData, isFavorite, ...props }) => {
 
+    const { currentUser } = useSelector((state) => state.userReducer);
     const [imageError, setImageError] = useState(false);
     const [fontsLoaded] = useFonts({
         Roboto,
@@ -61,25 +70,83 @@ export const CharDetails = ({ charData, isFavorite, ...props }) => {
         }
     };
 
-    const handleAddFav = () => {
-        playSound();
-        try {
-            dispatch(addToFavorites(charDataView)); //TODO: Fix this
-            toStoreFavChar(charDataView);
-        } catch (error) {
-            console.log('Error adding to favorites in dispatch at charModal.jsx', error);
-        }
 
-    }
-    const handleRemoveFav = () => {
+    const handleAddFav = async () => {
         playSound();
+        if (currentUser === null || currentUser === undefined) {
+            Alert.alert('Sorry, to add a character to your favorites you need to be logged in first.')
+            return;
+        }
         try {
-            dispatch(removeFromFavorites(charDataView)); //TODO: Fix this
-            toRemoveFavChar(charDataView);
-            // setFavorites(prev => prev.filter(char => char !== charDataView));
-            // FavoritesLengthUpdater(dispatch);
+            // firebaseData = [];
+            firebaseData = await checkFirebaseFavs(currentUser);
+            // toStoreFavChar(charData); // Local storage
+            // console.error('FAVORITES IN FIREBASEDATA AGREGANDOOO', firebaseData.favorites)
+
+            // setFavoritesTemp([...firebaseData.favorites, charData])
+            // console.error('FAVORITES aaaaaaaa111', favorites)
+            // dispatch(addToFavorites(charData)); //TODO: Fix this // Redux
+
+            // FavoritesLengthUpdater(dispatch); // This generates an error and do not allow to upload
+            // console.error('CHARDATA ADDED TO FAVS:', charData.name);
+
+            // console.error('favorites changed', favorites)
+
+            // setFavorites([...firebaseData.favorites, charData]); // Local state TODO:" This need the previus state first
+            if (firebaseData !== null && firebaseData.favorites !== null && firebaseData.favorites !== undefined) {
+                console.error('AGREGADNOOO', firebaseData.favorites, 'YYYYYY', charDataView)
+
+                if (firebaseData.favorites.some(item => item.id === charDataView.id)) {
+                    console.error("This character is already in your favorites");
+                    Alert.alert("This character is already in your favorites");
+
+                    lenght = updateFavoritesLength(incrementCounterFavorites, dispatch, currentUser)
+                    console.error('lenght', lenght)
+
+                }
+
+                else {
+                    // console.warn('adding anyways', firebaseData.favorites, charData)
+
+                    saveUserPreferences([...firebaseData.favorites, charDataView]);
+                }
+                // console.error('favorites afterRRRRRRRRRRRRRRRRRRRR', favorites)
+            }
+
         } catch (error) {
-            console.log('Error removing to favorites in dispatch at charModal.jsx', error);
+            console.log('Error adding to favorites in dispatch at CharModal.jsx', error);
+        }
+    }
+
+    const handleRemoveFav = async () => {
+        playSound();
+        // dispatch(removeFromFavorites(charDataView)); //TODO: Fix this
+        // toRemoveFavChar(charDataView);
+        if (currentUser === null || currentUser === undefined) {
+            console.error('Error removing the character from your favorites at CharDetails.jsx:')
+            Alert.alert('Sorry, to remove a character to your favorites you need to be logged in first.')
+            return;
+        }
+        try {
+
+            firebaseData = await checkFirebaseFavs(currentUser);
+
+            if (firebaseData !== null && firebaseData.favorites !== null && firebaseData.favorites !== undefined) {
+                console.error('ELIMINANDO DE ', firebaseData.favorites, 'EL DATA', charDataView)
+
+                const filteredFavorites = firebaseData.favorites.filter(item => item.id !== charDataView.id);
+                if (filteredFavorites) {
+                    console.error('SALVATPORE', filteredFavorites)
+                    saveUserPreferences(filteredFavorites);
+                    isFavorite = false;
+                    // Alert.alert("Character removed from your favorites");
+                    props.navigation.goBack();
+                }
+
+            }
+        } catch (error) {
+            console.error('Error removing the character from your favorites at CharDetails.jsx:', error);
+            Alert.alert("Error removing the character from your favorites, please try again later!");
         }
     }
 

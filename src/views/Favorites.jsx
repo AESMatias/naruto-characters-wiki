@@ -7,11 +7,8 @@ import { useState, useEffect } from 'react'
 import { CharModal } from '../components/CharModal.jsx';
 import { loadData, retrieveData } from '../utils/handleData.jsx';
 import { Character } from '../components/Character.jsx';
-import { useSelector } from 'react-redux';
-import { saveUserPreferences } from '../utils/handleData.jsx';
-import { updateFavoritesLength } from '../utils/handleData.jsx';
-import { incrementCounterFavorites } from '../store/slices/AccountSlice.jsx';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { setFirebaseFavoritesFetched } from '../store/slices/AccountSlice.jsx';
 
 export const Favorites = () => {
 
@@ -23,40 +20,45 @@ export const Favorites = () => {
     const [favorites, setFavorites] = useState([])
 
     const { currentUser } = useSelector((state) => state.userReducer);
+    const dispatch = useDispatch();
 
-    // useEffect(() => {
-    //     // loadData(setdataFetched);
-    //     retrieveData().then((data) => {
-    //         setFavorites(data);
-    //         if (currentUser !== null) {
-    //             saveUserPreferences(data);
-    //         }
-    //         else {
-    //             console.log('Error at saving user preferences at Favorites.jsx: currentUser is null');
-    //         }
-    //     });
-    // }, []); // Started when the component is mounted
+    useEffect(() => {
+        // loadData(setdataFetched);
+        retrieveData(currentUser, dispatch).then((data) => {
+            setFavorites(data);
+            if (currentUser !== null) {
+                // saveUserPreferences(data);
+            }
+            else {
+                console.log('Error at saving user preferences at Favorites.jsx: currentUser is null');
+            }
+        });
+    }, []); // Started when the component is mounted
 
     // dispatch = useDispatch();
     // updateFavoritesLength(incrementCounterFavorites, dispatch, currentUser);
 
     useEffect(() => {
-        onChangeText('');
-        retrieveData(currentUser).then((data) => {
-            setFavorites(data);
+        // onChangeText('');
+        if (refreshing) {
             setRefreshing(false);
-            if (currentUser !== null) {
-                // Alert.alert('Favorite characters has been uploaded to the cloud!')
-                saveUserPreferences(data);
-            }
-            else {
-                // Alert.alert('You are not logged, your favorites will not be saved on the cloud');
-                console.log('Error at saving user preferences at Favorites.jsx: currentUser is null');
-            }
-        });
-
+            // dispatch(setFirebaseFavoritesFetched(false));
+            // console.error('cambio a FALSE el SLICE porque useeffect favorites')
+            // Alert.alert('Refreshing the favorites');
+            retrieveData(currentUser, dispatch).then((data) => {
+                setFavorites(data);
+                // console.warn('eNEW DATAAAAAAAAAA', data)
+                if (currentUser !== null) {
+                    // Alert.alert('Favorite characters has been uploaded to the cloud!')
+                    // saveUserPreferences(data);
+                }
+                else {
+                    // Alert.alert('You are not logged, your favorites will not be saved on the cloud');
+                    console.log('Error at saving user preferences at Favorites.jsx: currentUser is null');
+                }
+            });
+        }
         // updateFavoritesLength(incrementCounterFavorites, dispatch, currentUser);
-
     }, [refreshing]); // Observe changes in the refresing state
 
     return (
@@ -94,8 +96,8 @@ export const Favorites = () => {
                         style={styles.char_list}
                         refreshing={refreshing}
                         onRefresh={refreshing => setRefreshing(!refreshing)} />) :
-                    <View style={styles.flat_container}>
-                        <Text style={{ fontSize: 25, color: 'white', alignSelf: 'center', }}>Log in to see your favorites</Text>
+                    <View style={[styles.flat_containerLogin]}>
+                        <Text style={{ fontSize: 22, color: 'white', alignSelf: 'center', }}>Log in to see your favorites</Text>
                     </View>
                 }
             </View>
@@ -112,6 +114,15 @@ const styles = StyleSheet.create({
         marginBottom: 0,
         backgroundColor: '#fff',
         backgroundColor: 'rgba(10,30,70,0.2)',
+    },
+    flat_containerLogin: {
+        position: 'absolute',
+        paddingTop: 0,
+        top: '45%',
+        width: '100%',
+        marginBottom: 0,
+        // backgroundColor: '#fff',
+        // backgroundColor: 'rgba(10,30,70,0.2)',
     },
     container: {
 

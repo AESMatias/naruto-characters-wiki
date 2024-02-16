@@ -3,8 +3,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { database } from "../../firebaseConfig.js";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { Alert } from "react-native";
+import { setFirebaseFavoritesFetched } from "../store/slices/AccountSlice.jsx";
+import { useDispatch } from "react-redux";
 
 export const saveUserPreferences = async (newFavoritesList) => {
+
     try {
         // Get the user auth data from the AsyncStorage
         const storedData = await AsyncStorage.getItem('auth');
@@ -16,18 +19,19 @@ export const saveUserPreferences = async (newFavoritesList) => {
         // console.log('With user data', newFavoritesList)
         // Save the data in the database
         await setDoc(userDocRef, itemToSave);
-        console.log('SaveUserPreferences - data saved successfully for :', authData.uid);
+        // Alert.alert('Your favorites have been saved in the cloud!')
+        console.log('SaveUserPreferences - data saved successfully for UID:', authData.uid);
     } catch (error) {
+        Alert.alert('Error saving the user favorites in the cloud, please try again later!')
         console.error('Error saving the user favorites at saveUserPreferences:', error);
     }
 }
 
 
-
-
 export const updateFavoritesLength = async (incrementCounterFavorites, dispatch, currentUser) => {
     try {
-        const data = await retrieveData(currentUser);
+        const data = await retrieveData(currentUser, dispatch);
+
         const dataArray = Object.values(data);
         const favoritesLength = dataArray.length;
         dispatch(incrementCounterFavorites(favoritesLength));
@@ -41,12 +45,13 @@ export const updateFavoritesLength = async (incrementCounterFavorites, dispatch,
 };
 
 export const toStoreFavChar = async (value, dispatch) => {
-    try {
-        const jsonValue = JSON.stringify(value)
-        await AsyncStorage.setItem(`fav_Char_${value.id}`, jsonValue)
-    } catch (e) {
-        console.error('Error saving the data:', e);
-    }
+    //TODO:
+    // try {
+    //     const jsonValue = JSON.stringify(value)
+    //     await AsyncStorage.setItem(`fav_Char_${value.id}`, jsonValue)
+    // } catch (e) {
+    //     console.error('Error saving the data:', e);
+    // }
 }
 export const toRemoveFavChar = async (value, dispatch) => {
     try {
@@ -79,7 +84,7 @@ export const setNoFavChars = async (setdataFetched, data) => {
 }
 
 export const checkFirebaseFavs = async (currentUser) => {
-
+    // console.warn('checking firestone with', currentUser)
     if (currentUser === null) {
         return null;
     }
@@ -97,15 +102,20 @@ export const checkFirebaseFavs = async (currentUser) => {
             return data;
         } else {
             console.log("No such document!");
+            // Create the document if it does not exist
+            await setDoc(docRef, { favorites: [] });
+
+
             return null;
         }
     } catch (error) {
-        console.error("Error getting document:", error);
+        // Is normal to get an error if the document does not exist
+        // console.error('Error checking the firebase database at checkFirebaseFavs/handleData.jsx:')
         return null;
     }
 }
 
-export const loadData = async (setdataFetched, setFavoritesTemp) => {
+export const loadData = async (setdataFetched, dispatch, currentUser) => {
     // This function loads the data rather from the API or from the AsyncStorage
     // But firrst, we check the firebase database
 
@@ -119,14 +129,15 @@ export const loadData = async (setdataFetched, setFavoritesTemp) => {
             fetchCharsData(setdataFetched, data);
         }
     });
-    retrieveData().then((data) => {
-        // We set the favorites in the useState hook to be used in the modal (drilling?)
-        // setFavoritesTemp(data);
-        console.log('line beefore deleteeeeed solve this')
-    });
+
+    // retrieveData(currentUser, dispatch).then((data) => {
+    //     // console.error('AGREGANDOOOOOOOOOO', data)
+    //     // We set the favorites in the useState hook to be used in the modal (drilling?)
+    //     // setFavoritesTemp((prev) => { prev.push(data); return prev; }); TODO:BORRARRRRRR
+    // });
 }
 
-export const fetchCharsData = async (setdataFetched) => {
+export const fetchCharsData = async (setdataFetched, data) => {
     const arrayOfCharacters = [];
     try {
         for (let i = 1; i <= 73; i++) { // TO PAGE 73 MAX
@@ -172,19 +183,25 @@ export const CheckCharsInAsyncStorage = async () => {
     }
 }
 
-export const retrieveData = async (currentUser) => {
+export const retrieveData = async (currentUser, dispatch) => {
 
     //If the data is not found in firestone database, we retrieve it from the AsyncStorage
-    firebaseData = await checkFirebaseFavs(currentUser.auth);
+
+    firebaseData = await checkFirebaseFavs(currentUser);
+    // console.error('FAVORITES IN FIREBASEDATA', firebaseData.favorites)
 
     let arrayOfFavsChars = [];
     if (firebaseData !== null) {
-        // Alert.alert('The data was found in firestone!')
+        dispatch(setFirebaseFavoritesFetched(true));
+
+        // Alert.alert('The data was found in the cloud!')
         // console.warn("Document data:", firebaseData.favorites);
         return firebaseData.favorites;
     } else {
-        // Alert.alert('NO FIRESTONE DATA')
+        console.error('RETRIEVE INFO NULL AT RETRIEVEDATA')
+        return null;
         try {
+            Alert.alert('The data was NOT FOUND!')
             const allKeys = await AsyncStorage.getAllKeys();
             const storedData = await AsyncStorage.multiGet(allKeys);
 

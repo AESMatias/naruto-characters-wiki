@@ -17,7 +17,6 @@ import { CharDetails } from '../views/CharDetails.jsx';
 import { Updates } from '../views/Updates.jsx';
 import { MyAccount } from '../views/MyAccount.jsx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { retrieveData } from '../utils/handleData.jsx';
 import { incrementCounterFavorites } from '../store/slices/AccountSlice.jsx';
 import { updateFavoritesLength } from '../utils/handleData.jsx';
 import { useDispatch, useSelector } from 'react-redux';

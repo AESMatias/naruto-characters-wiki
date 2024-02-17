@@ -29,7 +29,11 @@ export default {
       "package": "com.aesmatias.narutocharacterswiki"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "config": {
+        "csp": "default-src 'self' *; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
+      }
+
     },
     "scheme": "com.aesmatias.narutocharacterswiki",
     "plugins": [

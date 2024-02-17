@@ -1,5 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
-import { View, StyleSheet, FlatList, SafeAreaView, ActivityIndicator, useColorScheme } from 'react-native';
+import {
+    Text, View, StyleSheet, FlatList, SafeAreaView,
+    ActivityIndicator, useColorScheme
+} from 'react-native';
 import { WriteNameComponent } from '../components/WriteNameComponent.jsx';
 import { useEffect, useState } from 'react';
 import { Character } from '../components/Character.jsx';
@@ -11,7 +14,7 @@ import { addToFavorites, setUser } from '../store/slices/AccountSlice.jsx';
 import { CheckAuthStorage } from '../../firebaseConfig.js';
 import { saveUserPreferences } from '../utils/handleData.jsx';
 import { checkFirebaseFavs } from '../utils/handleData.jsx';
-
+import { phrasesToSayLoading } from '../utils/phrasesWhenLoading.js'
 // import Constants from 'expo-constants';
 
 // const versionCode = JSON.stringify(Constants.expoConfig.android);
@@ -98,6 +101,7 @@ export const Home = () => {
 
     useEffect(() => {
         console.log('Refreshing the home, but nothing happend...')
+        // setFavoritesTemp([]);
         setRefreshing(false);
     }, [refreshing]); // Observe changes in the refresing state
 
@@ -148,9 +152,6 @@ export const Home = () => {
         }
     }
 
-
-
-
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar style='auto' />
@@ -170,26 +171,33 @@ export const Home = () => {
                 {/* <Text>INSIDE MODAL</Text> */}
             </Modal>
             <View style={styles.flat_container}>
-                {dataFetched.length === 0 ? <ActivityIndicator size={100} color="#0000ff" /> : <FlatList
-                    data={(dataFetched !== undefined) ?
-                        dataFetched.filter((char) => char.name.toLowerCase().includes(text.toLowerCase())) : []
-                    }
-                    keyExtractor={(item) => item.id.toString()}
-                    renderItem={({ item }) => <Character
-                        onPress={() => handlePress()}
-                        charData={item}
-                        setcharModal={setcharModal}
-                        setFilledModal={setFilledModal}
+                {dataFetched && dataFetched.length === 0 ?
+                    <View style={styles.flat_container}>
+                        <ActivityIndicator size={100} color="#0000ff" />
+                        <Text style={{ fontSize: 18, color: 'rgba(240,240,240,0.8)', alignSelf: 'center' }}>
+                            {phrasesToSayLoading[Math.floor(Math.random() * phrasesToSayLoading.length)]}
+                        </Text>
+                    </View>
+                    : <FlatList
+                        data={(dataFetched !== undefined) ?
+                            dataFetched.filter((char) => char.name.toLowerCase().includes(text.toLowerCase())) : []
+                        }
+                        keyExtractor={(item) => item.id.toString()}
+                        renderItem={({ item }) => <Character
+                            onPress={() => handlePress()}
+                            charData={item}
+                            setcharModal={setcharModal}
+                            setFilledModal={setFilledModal}
+                        />}
+                        style={styles.char_list}
+                        refreshing={refreshing}
+                        onRefresh={refreshing => setRefreshing(!refreshing)}
+                        showsVerticalScrollIndicator={true}
+                        maxToRenderPerBatch={20} // Render 50 elements per batch
+                        initialNumToRender={20} // Render 100 elements when the component is mounted
+                        windowSize={20} // Hold 20 elements in memory
+                        removeClippedSubviews={true} // Not render elements that are not in the screen
                     />}
-                    style={styles.char_list}
-                    refreshing={refreshing}
-                    onRefresh={refreshing => setRefreshing(!refreshing)}
-                    showsVerticalScrollIndicator={true}
-                    maxToRenderPerBatch={20} // Render 50 elements per batch
-                    initialNumToRender={20} // Render 100 elements when the component is mounted
-                    windowSize={20} // Hold 20 elements in memory
-                    removeClippedSubviews={true} // Not render elements that are not in the screen
-                />}
             </View>
             <WriteNameComponent setdataFetched={setdataFetched} onChangeText={onChangeText} text={text} />
         </SafeAreaView>
@@ -206,6 +214,14 @@ const styles = StyleSheet.create({
         marginBottom: 0,
         backgroundColor: '#fff',
         backgroundColor: 'rgba(10,30,70,0.2)',
+    },
+    flat_containerLogin: {
+        position: 'absolute',
+        padding: 10,
+        top: '45%',
+        width: '100%',
+        marginBottom: 0,
+        padding: 10,
     },
     container: {
 

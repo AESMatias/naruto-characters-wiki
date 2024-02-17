@@ -1,5 +1,5 @@
 import {
-    StyleSheet, FlatList, View, Alert, Text
+    StyleSheet, FlatList, View, Alert, Text, ActivityIndicator
 } from 'react-native'
 import React from 'react'
 import { Modal } from '../components/Modal.jsx'
@@ -15,6 +15,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { incrementCounterFavorites } from '../store/slices/AccountSlice.jsx';
 import { updateFavoritesLength } from '../utils/handleData.jsx';
 import { useNavigation } from '@react-navigation/native';
+import { phrasesToSayLoading } from '../utils/phrasesWhenLoading.js'
 export const Favorites = () => {
 
     const [refreshing, setRefreshing] = useState(false); // For the FlatList
@@ -111,27 +112,41 @@ export const Favorites = () => {
                 {/* <Text>INSIDE MODAL</Text> */}
             </Modal>
             <View style={styles.flat_container}>
+
+
                 {currentUser ? (
-                    <FlatList
-                        data={(favorites !== undefined) ?
-                            favorites : []
-                        }
-                        //parseamos lo de keystractor ya que es un objeto
-                        // keyExtractor={(item) => item.id.toString()}
-                        keyExtractor={(item) => (item.id.toString())}
-                        renderItem={({ item }) => <Character
-                            onPress={() => handlePress()}
-                            charData={item}
-                            setcharModal={setcharModal}
-                            setFilledModal={setFilledModal}
-                        />}
-                        style={styles.char_list}
-                        refreshing={refreshing}
-                        onRefresh={refreshing => setRefreshing(!refreshing)} />) :
+                    (favorites && favorites.length > 0) ? (
+                        <FlatList
+                            data={favorites}
+                            keyExtractor={(item) => item.id.toString()}
+                            renderItem={({ item }) => (
+                                <Character
+                                    onPress={() => handlePress()}
+                                    charData={item}
+                                    setcharModal={setcharModal}
+                                    setFilledModal={setFilledModal}
+                                />
+                            )}
+                            style={styles.char_list}
+                            refreshing={refreshing}
+                            onRefresh={refreshing => setRefreshing(!refreshing)}
+                        />
+                    ) : (
+                        <View style={styles.flat_containerLogin}>
+                            <ActivityIndicator size={100} color="#0000ff" />
+                            <Text style={{ fontSize: 18, color: 'rgba(240,240,240,0.8)', alignSelf: 'center' }}>
+                                {phrasesToSayLoading[Math.floor(Math.random() * phrasesToSayLoading.length)]}
+                            </Text>
+                        </View>
+                    )
+                ) : (
                     <View style={[styles.flat_containerLogin]}>
-                        <Text style={{ fontSize: 22, color: 'white', alignSelf: 'center', }}>Log in to see your favorites</Text>
+                        <Text style={{ fontSize: 22, color: 'white', alignSelf: 'center' }}>Log in to see your favorites</Text>
                     </View>
-                }
+
+                )}
+
+
             </View>
             {/* <WriteNameComponent setdataFetched={setdataFetched} onChangeText={onChangeText} text={text} /> */}
         </View>
@@ -149,7 +164,7 @@ const styles = StyleSheet.create({
     },
     flat_containerLogin: {
         position: 'absolute',
-        paddingTop: 0,
+        padding: 10,
         top: '45%',
         width: '100%',
         marginBottom: 0,

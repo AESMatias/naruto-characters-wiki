@@ -14,8 +14,8 @@ import { addToFavorites, removeFromFavorites } from '../store/slices/AccountSlic
 import { toStoreFavChar } from '../utils/handleData.jsx';
 import { Share, Alert } from 'react-native';
 import { toRemoveFavChar } from '../utils/handleData.jsx'
-import { useFonts } from 'expo-font';
-import { Roboto } from '@expo-google-fonts/inter'
+// import { useFonts } from 'expo-font';
+// import { Roboto } from '@expo-google-fonts/inter'
 import { checkFirebaseFavs } from '../utils/handleData.jsx';
 import { saveUserPreferences } from '../utils/handleData.jsx';
 import { incrementCounterFavorites } from '../store/slices/AccountSlice.jsx';
@@ -30,9 +30,9 @@ export const CharDetails = ({ charData, isFavorite, ...props }) => {
     const { muted } = useSelector((state) => state.userReducer);
     const { currentUser } = useSelector((state) => state.userReducer);
     const [imageError, setImageError] = useState(false);
-    const [fontsLoaded] = useFonts({
-        Roboto,
-    });
+    // const [fontsLoaded] = useFonts({
+    // Roboto,
+    // });
 
     useLayoutEffect(() => {
         console.log('UseLayoutEffect at CharDetails.sx for the data character object: ', charDataView)
@@ -439,7 +439,7 @@ const styles = StyleSheet.create({
         marginTop: 5,
         textAlign: 'center',
         minWidth: '50%',
-        fontFamily: 'Roboto',
+        // fontFamily: 'Roboto',
     },
     text_favorite: {
         flex: 1,
@@ -454,7 +454,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginVertical: 5,
         borderColor: 'white',
-        fontFamily: 'Roboto',
+        // fontFamily: 'Roboto',
     },
     text_share: {
         flex: 1,
@@ -469,7 +469,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginVertical: 5,
         borderColor: 'white',
-        fontFamily: 'Roboto',
+        // fontFamily: 'Roboto',
     },
     image: {
         width: 120,

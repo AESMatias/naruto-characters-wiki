@@ -9,7 +9,12 @@ import { loadData, retrieveData } from '../utils/handleData.jsx';
 import { Character } from '../components/Character.jsx';
 import { useSelector, useDispatch } from 'react-redux';
 import { setFirebaseFavoritesFetched } from '../store/slices/AccountSlice.jsx';
-
+import { orderBy, doc, collection, onSnapshot, query } from 'firebase/firestore';
+import { database } from '../../firebaseConfig.js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { incrementCounterFavorites } from '../store/slices/AccountSlice.jsx';
+import { updateFavoritesLength } from '../utils/handleData.jsx';
+import { useNavigation } from '@react-navigation/native';
 export const Favorites = () => {
 
     const [refreshing, setRefreshing] = useState(false); // For the FlatList
@@ -18,9 +23,35 @@ export const Favorites = () => {
     const [charModal, setcharModal] = useState(false) // The modal for every character
     const [FilledModal, setFilledModal] = useState({}) // The modal object of every character
     const [favorites, setFavorites] = useState([])
+    const [favoritesFirebase, setFavoritesFirebase] = useState([])
 
     const { currentUser } = useSelector((state) => state.userReducer);
     const dispatch = useDispatch();
+    const { navigate } = useNavigation();
+
+    useEffect(() => {
+        if (currentUser !== null && currentUser !== undefined && JSON.parse(currentUser).uid) {
+            try {
+                const userId = JSON.parse(currentUser).uid;
+                const docReference = doc(database, "users", userId);
+                const unsuscribe = onSnapshot(docReference, (doc) => {
+                    if (doc.exists()) {
+                        const docData = doc.data(); // This is the user's document that contains the favorites
+                        console.log('Document data refreshed automatically in Favoritex.jsx! :');
+                        // dispatch = useDispatch();
+                        updateFavoritesLength(incrementCounterFavorites, dispatch, currentUser);
+                        setRefreshing(true);
+                    } else {
+                        console.log('There is no such document in Favoritex.jsx');
+                    }
+                });
+                return () => unsuscribe();
+            } catch (error) {
+                console.error('Error at query Favorites.jsx:', error);
+            }
+        }
+    }, []);
+
 
     useEffect(() => {
         // loadData(setdataFetched);
@@ -35,7 +66,6 @@ export const Favorites = () => {
         });
     }, []); // Started when the component is mounted
 
-    // dispatch = useDispatch();
     // updateFavoritesLength(incrementCounterFavorites, dispatch, currentUser);
 
     useEffect(() => {
@@ -76,6 +106,7 @@ export const Favorites = () => {
                     setcharModal={setcharModal}
                     setFavorites={setFavorites}
                     isFavorite={true}
+                    cameFromHome={false}
                 />
                 {/* <Text>INSIDE MODAL</Text> */}
             </Modal>

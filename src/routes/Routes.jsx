@@ -59,7 +59,8 @@ export function Navigator() {
             borderTopColor: 'white',
             height: 50,
         },
-        tabBarBadge: counterFavorites,
+        // tabBarBadge: counterFavorites,
+        tabBarBadge: '?',
         tabBarBadgeStyle: { fontSize: 9, width: 20, height: 20, borderRadius: 10, backgroundColor: 'red' },
 
         headerShown: true, // Show the header

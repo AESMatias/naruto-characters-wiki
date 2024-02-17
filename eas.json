@@ -11,6 +11,7 @@
       "ios": {
         "simulator": "true"
       },
+      "distribution": "internal",
       "android": {
         "buildType": "apk"
       }

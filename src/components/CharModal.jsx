@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, View, Alert, TouchableOpacity } from 'react-native'
-import { React, useEffect, useState } from 'react'
+import { React, useEffect, useLayoutEffect, useState } from 'react'
 import { AntDesign } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -17,11 +17,28 @@ import { FavoritesLengthUpdater } from '../utils/handleData.jsx';
 
 
 
-export const CharModal = ({ charData, setcharModal, favoritesTemp, setFavoritesTemp, setFavorites, isFavorite = false }) => {
+export const CharModal = ({ charData, setcharModal, cameFromHome,
+    favoritesTemp, setFavoritesTemp, setFavorites }) => {
 
     const { navigate } = useNavigation();
 
     const [imageError, setImageError] = useState(false);
+    const [isRemoved, setIsRemoved] = useState(false); // This is to check if the character has been removed from the favorites
+    const [isFavorite, setIsFavorite] = useState(false);
+
+    useLayoutEffect(() => {
+        if (cameFromHome === true) {
+            setIsRemoved(true);
+        }
+    }, [cameFromHome]);
+
+    // useEffect(() => {
+    //     if (isFavorite === false) {
+    //         console.warn('; priemroera ', isFavorite)
+    //         setIsRemoved(true);// When the character is a favorite, it is not removed by default
+    //         console.log('the character is a favorite', isFavorite)
+    //     }
+    // }, [])
 
     const handleImageError = () => {
         setImageError(true);
@@ -31,7 +48,6 @@ export const CharModal = ({ charData, setcharModal, favoritesTemp, setFavoritesT
     handleOnPress = () => {
         charDataView = charData;
         isFavoriteRouter = isFavorite;
-        console.log('LA DATRA ES ', charData, { charDataView });
         navigate('CharDetails', { charDataView, isFavoriteRouter });
         playSound();
         setcharModal(false)
@@ -41,12 +57,19 @@ export const CharModal = ({ charData, setcharModal, favoritesTemp, setFavoritesT
     // const { favorites } = useSelector(state => state.userReducer);
     const { currentUser } = useSelector((state) => state.userReducer);
 
-
-
-
-
     const handleAddFav = async () => {
+
+        if (cameFromHome === false) {
+            setIsRemoved(false);
+            setIsFavorite(true);
+
+        } if (cameFromHome === true) {
+            setIsRemoved(false);
+            setIsFavorite(true);
+        }
+
         playSound();
+
         if (currentUser === null || currentUser === undefined) {
             Alert.alert('Sorry, to add a character to your favorites you need to be logged in first.')
             return;
@@ -68,17 +91,14 @@ export const CharModal = ({ charData, setcharModal, favoritesTemp, setFavoritesT
 
             // setFavorites([...firebaseData.favorites, charData]); // Local state TODO:" This need the previus state first
             if (firebaseData !== null && firebaseData.favorites !== null && firebaseData.favorites !== undefined) {
-                console.error('AGREGADNOOO', firebaseData.favorites, 'YYYYYY', charData)
-
+                // console.error('AGREGADNOOO', firebaseData.favorites, 'YYYYYY', charData)
                 if (firebaseData.favorites.some(item => item.id === charData.id)) {
                     console.error("This character is already in your favorites");
                     Alert.alert("This character is already in your favorites");
-
                 }
 
                 else {
                     // console.warn('adding anyways', firebaseData.favorites, charData)
-
                     saveUserPreferences([...firebaseData.favorites, charData]);
                 }
                 // console.error('favorites afterRRRRRRRRRRRRRRRRRRRR', favorites)
@@ -110,7 +130,19 @@ export const CharModal = ({ charData, setcharModal, favoritesTemp, setFavoritesT
     // }
 
     const handleRemoveFav = async () => {
+
+        if (cameFromHome === false) {
+            setIsFavorite(false);
+            setIsRemoved(true);
+        }
+
+        if (cameFromHome === true) {
+            setIsFavorite(false);
+            setIsRemoved(true);
+        }
+
         playSound();
+
         // dispatch(removeFromFavorites(charDataView)); //TODO: Fix this
         // toRemoveFavChar(charDataView);
         if (currentUser === null || currentUser === undefined) {
@@ -123,14 +155,13 @@ export const CharModal = ({ charData, setcharModal, favoritesTemp, setFavoritesT
             firebaseData = await checkFirebaseFavs(currentUser);
 
             if (firebaseData !== null && firebaseData.favorites !== null && firebaseData.favorites !== undefined) {
-                console.error('ELIMINANDO DE ', firebaseData.favorites, 'EL DATA', charData)
+                // console.error('REMOVED FROM ', firebaseData.favorites, 'THE DATA', charData)
 
                 const filteredFavorites = firebaseData.favorites.filter(item => item.id !== charData.id);
                 if (filteredFavorites) {
-                    console.error('SALVATPORE', filteredFavorites)
+                    // console.error('SALVATPORE', filteredFavorites)
                     saveUserPreferences(filteredFavorites);
-                    isFavorite = false;
-                    Alert.alert("Character removed from your favorites");
+                    // Alert.alert("Character removed from your favorites");
                 }
 
             }
@@ -170,7 +201,7 @@ export const CharModal = ({ charData, setcharModal, favoritesTemp, setFavoritesT
                 </TouchableOpacity>
 
 
-                {isFavorite ?
+                {!isRemoved ?
                     <TouchableOpacity onPress={handleRemoveFav}>
                         <Text style={[styles.text_favorite, { backgroundColor: 'red', fontSize: 15 }]}>
                             Remove from favorites {

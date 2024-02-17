@@ -94,7 +94,7 @@ export const CharDetails = ({ charData, isFavorite, ...props }) => {
 
             // setFavorites([...firebaseData.favorites, charData]); // Local state TODO:" This need the previus state first
             if (firebaseData !== null && firebaseData.favorites !== null && firebaseData.favorites !== undefined) {
-                console.error('AGREGADNOOO', firebaseData.favorites, 'YYYYYY', charDataView)
+                // console.error('AGREGADNOOO', firebaseData.favorites, 'YYYYYY', charDataView)
 
                 if (firebaseData.favorites.some(item => item.id === charDataView.id)) {
                     console.error("This character is already in your favorites");
@@ -132,11 +132,11 @@ export const CharDetails = ({ charData, isFavorite, ...props }) => {
             firebaseData = await checkFirebaseFavs(currentUser);
 
             if (firebaseData !== null && firebaseData.favorites !== null && firebaseData.favorites !== undefined) {
-                console.error('ELIMINANDO DE ', firebaseData.favorites, 'EL DATA', charDataView)
+                // console.error('DELETING FROM ', firebaseData.favorites, 'THE DARA', charDataView)
 
                 const filteredFavorites = firebaseData.favorites.filter(item => item.id !== charDataView.id);
                 if (filteredFavorites) {
-                    console.error('SALVATPORE', filteredFavorites)
+                    // console.error('SALVATORE??', filteredFavorites)
                     saveUserPreferences(filteredFavorites);
                     isFavorite = false;
                     // Alert.alert("Character removed from your favorites");

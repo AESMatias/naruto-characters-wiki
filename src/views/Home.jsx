@@ -161,6 +161,7 @@ export const Home = () => {
                 FilledModal={[FilledModal]}
                 onRequestClose={() => setcharModal(false)}>
                 <CharModal charData={FilledModal}
+                    cameFromHome={true}
                     // favorites={favorites}
                     setcharModal={setcharModal}
                     setFavoritesTemp={setFavoritesTemp}
@@ -175,6 +176,7 @@ export const Home = () => {
                     }
                     keyExtractor={(item) => item.id.toString()}
                     renderItem={({ item }) => <Character
+                        onPress={() => handlePress()}
                         charData={item}
                         setcharModal={setcharModal}
                         setFilledModal={setFilledModal}

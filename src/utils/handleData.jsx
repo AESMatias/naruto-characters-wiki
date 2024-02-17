@@ -1,7 +1,7 @@
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { database } from "../../firebaseConfig.js";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc, collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { Alert } from "react-native";
 import { setFirebaseFavoritesFetched } from "../store/slices/AccountSlice.jsx";
 import { useDispatch } from "react-redux";
@@ -31,12 +31,11 @@ export const saveUserPreferences = async (newFavoritesList) => {
 export const updateFavoritesLength = async (incrementCounterFavorites, dispatch, currentUser) => {
     try {
         const data = await retrieveData(currentUser, dispatch);
-
         const dataArray = Object.values(data);
         const favoritesLength = dataArray.length;
-        dispatch(incrementCounterFavorites(favoritesLength));
+        // dispatch(incrementCounterFavorites(favoritesLength)); //TODO: This refresh the entire view and goes back to Home
         // const memoizedIncrementCounter = useMemo(() => dispatch(incrementCounterFavorites), [dispatch]);
-        console.warn('FAV Length:', favoritesLength);
+        // console.warn('FAV Length:', favoritesLength);
         return favoritesLength;
     } catch (error) {
         console.error('FAV Error retrieving favorites length:', error);

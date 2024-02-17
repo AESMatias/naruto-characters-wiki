@@ -27,6 +27,7 @@ import { updateFavoritesLength } from '../utils/handleData.jsx';
 
 export const CharDetails = ({ charData, isFavorite, ...props }) => {
 
+    const { muted } = useSelector((state) => state.userReducer);
     const { currentUser } = useSelector((state) => state.userReducer);
     const [imageError, setImageError] = useState(false);
     const [fontsLoaded] = useFonts({
@@ -50,7 +51,10 @@ export const CharDetails = ({ charData, isFavorite, ...props }) => {
     const URL = 'https://play.google.com/store/apps/details?id=com.aesmatias.narutocharacterswiki'
 
     const handleShare = async () => {
-        playSound();
+        if (!muted) {
+            playSound();
+        }
+
         try {
             const result = await Share.share({
                 message:
@@ -72,7 +76,10 @@ export const CharDetails = ({ charData, isFavorite, ...props }) => {
 
 
     const handleAddFav = async () => {
-        playSound();
+        if (!muted) {
+            playSound();
+        }
+
         if (currentUser === null || currentUser === undefined) {
             Alert.alert('Sorry, to add a character to your favorites you need to be logged in first.')
             return;
@@ -119,7 +126,10 @@ export const CharDetails = ({ charData, isFavorite, ...props }) => {
     }
 
     const handleRemoveFav = async () => {
-        playSound();
+        if (!muted) {
+            playSound();
+        }
+
         // dispatch(removeFromFavorites(charDataView)); //TODO: Fix this
         // toRemoveFavChar(charDataView);
         if (currentUser === null || currentUser === undefined) {

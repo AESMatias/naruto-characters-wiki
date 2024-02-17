@@ -1,7 +1,10 @@
 import { Audio } from 'expo-av';
+import { useSelector } from 'react-redux';
+
+
 
 let sound = null;
-let soundMuted = false;
+let muted = false;
 
 // export const playSound = () => {
 //     try {
@@ -17,7 +20,8 @@ let soundMuted = false;
 // };
 
 export const playSound = async () => {
-    if (soundMuted === false) {
+
+    if (muted === false) {
         try {
             if (!sound) {
                 sound = new Audio.Sound();

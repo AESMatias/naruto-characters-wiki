@@ -21,7 +21,7 @@ export const CharModal = ({ charData, setcharModal, cameFromHome,
     favoritesTemp, setFavoritesTemp, setFavorites }) => {
 
     const { navigate } = useNavigation();
-
+    const { muted } = useSelector((state) => state.userReducer);
     const [imageError, setImageError] = useState(false);
     const [isRemoved, setIsRemoved] = useState(false); // This is to check if the character has been removed from the favorites
     const [isFavorite, setIsFavorite] = useState(false);
@@ -49,7 +49,9 @@ export const CharModal = ({ charData, setcharModal, cameFromHome,
         charDataView = charData;
         isFavoriteRouter = isFavorite;
         navigate('CharDetails', { charDataView, isFavoriteRouter });
-        playSound();
+        if (!muted) {
+            playSound();
+        }
         setcharModal(false)
     }
 
@@ -68,7 +70,9 @@ export const CharModal = ({ charData, setcharModal, cameFromHome,
             setIsFavorite(true);
         }
 
-        playSound();
+        if (!muted) {
+            playSound();
+        };
 
         if (currentUser === null || currentUser === undefined) {
             Alert.alert('Sorry, to add a character to your favorites you need to be logged in first.')
@@ -141,7 +145,9 @@ export const CharModal = ({ charData, setcharModal, cameFromHome,
             setIsRemoved(true);
         }
 
-        playSound();
+        if (!muted) {
+            playSound();
+        }
 
         // dispatch(removeFromFavorites(charDataView)); //TODO: Fix this
         // toRemoveFavChar(charDataView);

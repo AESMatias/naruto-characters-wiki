@@ -7,7 +7,9 @@ export const WriteNameComponent = ({ setdataFetched, onChangeText, text }) => {
     const handleFetch = async () => {
         // const nameSearched = await searchByName(text);
         // setdataFetched(nameSearched);
-        playSound();
+        if (!muted) {
+            playSound();
+        }
 
         // arrayOfCharacters.then((data) => {
         //     console.log('data', data);

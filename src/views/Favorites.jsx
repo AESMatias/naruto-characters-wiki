@@ -120,6 +120,7 @@ export const Favorites = () => {
                         // keyExtractor={(item) => item.id.toString()}
                         keyExtractor={(item) => (item.id.toString())}
                         renderItem={({ item }) => <Character
+                            onPress={() => handlePress()}
                             charData={item}
                             setcharModal={setcharModal}
                             setFilledModal={setFilledModal}

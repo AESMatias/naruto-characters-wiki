@@ -6,13 +6,18 @@ import { FontAwesome } from '@expo/vector-icons';
 import { openURL } from '../utils/openURL'
 import { useNavigation } from '@react-navigation/native';
 import { playSound } from '../utils/tapSound.jsx';
+import { useSelector } from 'react-redux';
 
 export const Updates = () => {
+
+    const { muted } = useSelector((state) => state.userReducer);
 
     const URL = 'https://play.google.com/store/apps/details?id=com.aesmatias.narutocharacterswiki'
 
     const onShare = async () => {
-        playSound();
+        if (!muted) {
+            playSound();
+        }
         try {
             const result = await Share.share({
                 message:
@@ -33,7 +38,9 @@ export const Updates = () => {
     };
 
     const openPlayStoreForRating = async () => {
-        playSound();
+        if (!muted) {
+            playSound();
+        }
         const packageName = 'com.aesmatias.narutocharacterswiki';
         const playStoreUrl = `market://details?id=${packageName}`;
 

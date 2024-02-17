@@ -4,10 +4,17 @@ import { AntDesign } from '@expo/vector-icons';
 import { globalStyles } from '../styles/styles';
 import { BlurView } from 'expo-blur';
 import { playSound } from '../utils/tapSound.jsx';
+import { useSelector } from 'react-redux';
+
+
 export const Character = ({ charData, setcharModal, setFilledModal, FilledModal, ...props }) => {
 
+    const { muted } = useSelector((state) => state.userReducer);
+
     const handlePress = () => {
-        playSound();
+        if (!muted) {
+            playSound();
+        }
         setcharModal(true);
         setFilledModal(prevObject => ({ ...prevObject, ...charData }));
         console.log(charData.images[0]);

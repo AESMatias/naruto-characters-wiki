@@ -11,6 +11,7 @@ const userSlice = createSlice({
         firebaseFavoritesFetched: false, // Flag to know if the favorites characters were fetched from firebase
         counterFavorites: 0, // Counter for the number of favorites characters
         token: null, // Token of firebase authentication
+        muted: false, // Flag to know if the sound is muted
     },
     reducers: {
         setUser: (state, action) => {
@@ -47,12 +48,15 @@ const userSlice = createSlice({
         setFirebaseFavoritesFetched: (state, action) => {
             state.firebaseFavoritesFetched = action.payload;
         },
+        setMuted: (state, action) => {
+            state.muted = action.payload;
+        },
     },
 });
 
 export const { setUser, setLoading, setError, clearUser,
     addToFavorites, removeFromFavorites, incrementCounterFavorites,
-    setFirebaseFavoritesFetched } = userSlice.actions;
+    setFirebaseFavoritesFetched, setMuted } = userSlice.actions;
 
 // export const selectCurrentUser = (state) => state.user.currentUser;
 

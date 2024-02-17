@@ -1,20 +1,31 @@
 import {
-    StyleSheet, Text, View, Pressable, Button, Alert, Share, Linking
+    StyleSheet, Text, View, Pressable, Button, Alert, Share, Linking, Switch
 } from 'react-native'
 import React from 'react'
-import { Modal } from '../components/Modal.jsx'
 import { useState } from 'react'
 import { FontAwesome } from '@expo/vector-icons';
-import { useSelector } from 'react-redux';
 import { playSound } from '../utils/tapSound.jsx';
 import { openURL } from '../utils/openURL.jsx'
+import { setMuted } from '../store/slices/AccountSlice.jsx'
+import { useDispatch, useSelector } from 'react-redux';
 
 export const About = () => {
+
+    const { currentUser } = useSelector((state) => state.userReducer);
+    const { muted } = useSelector((state) => state.userReducer);
+
+    dispatch = useDispatch();
+    const [isSwitchEnabled, setIsSwitchEnabled] = useState(true);
+
 
     const URL = 'https://play.google.com/store/apps/details?id=com.aesmatias.narutocharacterswiki'
 
     const onShare = async () => {
-        playSound();
+
+        if (!muted) {
+            playSound();
+        }
+
         try {
             const result = await Share.share({
                 message:
@@ -35,18 +46,30 @@ export const About = () => {
     };
 
     const openPlayStoreForRating = async () => {
-        playSound();
+        if (!muted) {
+            playSound();
+        }
+
         const packageName = 'com.aesmatias.narutocharacterswiki';
         const playStoreUrl = `market://details?id=${packageName}`;
 
         try {
-            await Linking.openURL(playStoreUrl);
+            await Linking.openURL(playStoreUrl, muted);
         } catch (error) {
             console.error('Error at opening the application on Play Store:', error);
         }
     };
 
-    const { currentUser } = useSelector((state) => state.userReducer);
+    const toggleSwitch = () => {
+        if (!isSwitchEnabled) {
+            playSound();
+        }
+
+        setIsSwitchEnabled(previousState => !previousState);
+
+        dispatch(setMuted(isSwitchEnabled));
+    };
+
 
     return (
         <View style={styles.background}>
@@ -54,8 +77,8 @@ export const About = () => {
             <Text style={styles.text}>Made by Wholeheartedly</Text>
 
             <View style={styles.container}>
-                <Pressable onPress={() => { openURL('https://twitter.com/AESMatias') }}>
-                    <FontAwesome name="twitter-square" size={100} color={'white'} />
+                <Pressable onPress={() => { openURL('https://twitter.com/AESMatias', muted) }}>
+                    <FontAwesome name="twitter-square" size={80} color={'white'} />
                 </Pressable>
                 <View style={styles.container_text}>
                     <Text style={styles.text}>Twitter / X: </Text>
@@ -64,8 +87,8 @@ export const About = () => {
             </View>
 
             <View style={styles.container}>
-                <Pressable onPress={() => { openURL('https://github.com/AESMatias') }}>
-                    <FontAwesome name="github-square" size={100} color={'white'} />
+                <Pressable onPress={() => { openURL('https://github.com/AESMatias', muted) }}>
+                    <FontAwesome name="github-square" size={80} color={'white'} />
                 </Pressable>
                 <View style={styles.container_text}>
                     <Text style={styles.text}>GitHub: </Text>
@@ -77,6 +100,18 @@ export const About = () => {
                 <Button title="Share the app!" onPress={() => { onShare() }} />
                 <Button title="Rate on Play Store" onPress={() => { openPlayStoreForRating() }} />
             </View>
+
+            <View>
+                <Text style={{ color: 'white' }}>{(muted === false) ? 'Sound ON' : 'Sound OFF'}</Text>
+                <Switch
+                    trackColor={{ true: "#767577", false: "rgba(120,150,240,1)" }}
+                    thumbColor={!isSwitchEnabled ? "rgba(100,150,150,1)" : "rgba(100,100,100,1)"}
+                    onValueChange={toggleSwitch}
+                    value={muted}
+                    style={{ transform: [{ scale: 1.5 }] }}
+                />
+            </View>
+
         </View>
     )
 }
@@ -95,7 +130,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly',
     },
     container_text: {
-        flex: 6 / 10,
+        flex: 5 / 10,
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',

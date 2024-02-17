@@ -5,13 +5,17 @@ import {
 } from 'react-native';
 import { playSound } from '../utils/tapSound.jsx'
 import { FontAwesome } from '@expo/vector-icons';
+import { useSelector } from 'react-redux';
 
 export const Modal = ({ isModalOpen, withInput, children, ...props }) => {
     const { onRequestClose, FilledModal } = props;
+    const { muted } = useSelector((state) => state.userReducer);
 
     const handleCloseButton = () => {
         onRequestClose();
-        playSound();
+        if (!muted) {
+            playSound();
+        }
     }
 
     // const modifiedChildren = React.Children.map(children, child => {

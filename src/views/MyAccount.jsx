@@ -53,8 +53,15 @@ const LoggedScreen = () => {
 }
 
 const handleLogOut = async (navigation, currentUser) => {
+
+    const { muted } = useSelector((state) => state.userReducer);
+
     navigation.navigate('Login');
-    playSound();
+
+    if (!muted) {
+        playSound();
+    }
+
     logOutStorage();
     await signOut(auth);
     dispatch(clearUser());
@@ -133,7 +140,9 @@ const LoginScreen = () => {
     });
 
     const handleGoogleOAuth = () => {
-        playSound();
+        if (!muted) {
+            playSound();
+        }
         if (password === 'test') {
             try {
                 console.log('promptAsync:', promptAsync);
@@ -178,7 +187,9 @@ const LoginScreen = () => {
 
 
     const handleCreateAccount = () => {
-        playSound();
+        if (!muted) {
+            playSound();
+        }
         createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const user = userCredential.user;
@@ -195,7 +206,9 @@ const LoginScreen = () => {
     }
 
     const handleSignIn = () => {
-        playSound();
+        if (!muted) {
+            playSound();
+        }
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const user = userCredential.user;

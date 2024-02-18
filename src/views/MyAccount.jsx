@@ -2,7 +2,7 @@ import {
     StyleSheet, Text, View, Alert, Image, TextInput, TouchableOpacity
 } from 'react-native'
 import React, { useEffect } from 'react'
-import { useState } from 'react'
+import { useState, useLayoutEffect } from 'react'
 import { BlurView } from 'expo-blur';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { app } from '../../firebaseConfig.js';
@@ -35,7 +35,7 @@ export const auth = initializeAuth(app, {
 
 const LoggedScreen = () => {
     const { currentUser } = useSelector((state) => state.userReducer);
-    const navigation = useNavigation();
+    // const { muted } = useSelector((state) => state.userReducer);
 
     return (
         <View style={styles.background}>
@@ -44,7 +44,7 @@ const LoggedScreen = () => {
             <Text style={styles.text}>{currentUser ? JSON.parse(currentUser).email : 'Not Logged'}</Text>
             <TouchableOpacity
                 style={styles.button}
-                onPress={() => { handleLogOut(navigation, currentUser) }}>
+                onPress={() => handleLogOut(currentUser)}>
                 <Text style={[styles.text, styles.textButton]}>Sign out</Text>
             </TouchableOpacity>
         </View>
@@ -52,21 +52,11 @@ const LoggedScreen = () => {
 
 }
 
-const handleLogOut = async (navigation, currentUser) => {
-
-    const { muted } = useSelector((state) => state.userReducer);
-
-    navigation.navigate('Login');
-
-    if (!muted) {
-        playSound();
-    }
-
+const handleLogOut = async ({ currentUser }) => {
     logOutStorage();
     await signOut(auth);
     dispatch(clearUser());
-    console.log('User signed out, NOW EL CURRENT USER IS ', currentUser);
-    navigation.navigate('Login');
+    // navigation.navigate('Login');
 }
 
 const LoginScreen = () => {
@@ -81,6 +71,7 @@ const LoginScreen = () => {
     const [isLogged, setIsLogged] = useState(false);
 
     //Redux Store
+    const { muted } = useSelector((state) => state.userReducer);
     const { currentUser } = useSelector((state) => state.userReducer);
     const dispatch = useDispatch();
 
@@ -285,17 +276,33 @@ const LoginScreen = () => {
 
 
 export const MyAccount = () => {
+
+    [currentUserState, setCurrentUserState] = useState(null);
+
     const { currentUser } = useSelector((state) => state.userReducer);
     const Stack = createNativeStackNavigator();
 
+    useLayoutEffect(() => {
+        const subscriber = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                setCurrentUserState(user);
+            } else {
+                setCurrentUserState(null);
+            }
+        });
+        return subscriber;
+    }, []);
+
     return (
         <Stack.Navigator>
-            {/* {(currentUser) ? ( */}
-            {(currentUser && currentUser !== undefined && currentUser !== null) ? (
-                <Stack.Screen name="Logged" component={LoggedScreen}
+            {(currentUserState && currentUserState !== undefined && currentUserState !== null) ? (
+                <Stack.Screen
+                    name="Logged"
+                    component={LoggedScreen}
                     options={{
                         headerShown: false, // Hide the header
                     }}
+                // initialParams={{ currentUser }}
                 />
             ) : (<Stack.Screen name="Login" component={LoginScreen}
                 options={{

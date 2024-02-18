@@ -8,6 +8,7 @@ import { playSound } from '../utils/tapSound.jsx';
 import { openURL } from '../utils/openURL.jsx'
 import { setMuted } from '../store/slices/AccountSlice.jsx'
 import { useDispatch, useSelector } from 'react-redux';
+import { Image } from 'react-native';
 
 export const About = () => {
 
@@ -73,12 +74,15 @@ export const About = () => {
 
     return (
         <View style={styles.background}>
-            <Text style={styles.text}>Hello {currentUser ? JSON.parse(currentUser).email : `Anonymous`}</Text>
-            <Text style={styles.text}>Made by Wholeheartedly</Text>
+
+            <View style={styles.containerImage}>
+                <Image source={require('../assets/logo02.png')} style={styles.profileImage} />
+            </View>
+            <Text style={styles.text}>{currentUser ? `Hello, ` + JSON.parse(currentUser).email + `!` : null}</Text>
 
             <View style={styles.container}>
                 <Pressable onPress={() => { openURL('https://twitter.com/AESMatias', muted) }}>
-                    <FontAwesome name="twitter-square" size={80} color={'white'} />
+                    <FontAwesome name="twitter-square" size={60} color={'white'} />
                 </Pressable>
                 <View style={styles.container_text}>
                     <Text style={styles.text}>Twitter / X: </Text>
@@ -88,7 +92,7 @@ export const About = () => {
 
             <View style={styles.container}>
                 <Pressable onPress={() => { openURL('https://github.com/AESMatias', muted) }}>
-                    <FontAwesome name="github-square" size={80} color={'white'} />
+                    <FontAwesome name="github-square" size={60} color={'white'} />
                 </Pressable>
                 <View style={styles.container_text}>
                     <Text style={styles.text}>GitHub: </Text>
@@ -102,7 +106,7 @@ export const About = () => {
             </View>
 
             <View>
-                <Text style={{ color: 'white' }}>{(muted === false) ? 'Sound ON' : 'Sound OFF'}</Text>
+                <Text style={{ color: 'white', marginTop: 3 }}>{(muted === false) ? 'Sound ON' : 'Sound OFF'}</Text>
                 <Switch
                     trackColor={{ true: "#767577", false: "rgba(120,150,240,1)" }}
                     thumbColor={!isSwitchEnabled ? "rgba(100,150,150,1)" : "rgba(100,100,100,1)"}
@@ -111,14 +115,27 @@ export const About = () => {
                     style={{ transform: [{ scale: 1.5 }] }}
                 />
             </View>
+            <Text style={styles.text}>Made by Wholeheartedly ® </Text>
 
         </View>
     )
 }
 
 const styles = StyleSheet.create({
+    profileImage: {
+        width: 280,
+        height: 170,
+        marginVertical: 10,
+        padding: 20,
+    },
+    containerImage: {
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+
+    },
     container: {
-        flex: 1 / 5,
+        flex: 1 / 6,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
@@ -127,7 +144,7 @@ const styles = StyleSheet.create({
         flex: 1 / 6,
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'space-evenly',
+        justifyContent: 'space-between',
     },
     container_text: {
         flex: 5 / 10,
@@ -135,7 +152,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         margin: 5,
-        marginHorizontal: 45,
+        marginHorizontal: 0,
     },
     background: {
         flex: 1,
@@ -146,7 +163,7 @@ const styles = StyleSheet.create({
     },
     text: {
         color: 'white',
-        fontSize: 20,
+        fontSize: 16,
         fontWeight: 'bold',
         backgroundColor: 'rgba(100, 100, 100, 0)',
         padding: 2,

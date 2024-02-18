@@ -174,7 +174,11 @@ export const Home = () => {
                 {dataFetched && dataFetched.length === 0 ?
                     <View style={styles.flat_container}>
                         <ActivityIndicator size={100} color="#0000ff" />
-                        <Text style={{ fontSize: 18, color: 'rgba(240,240,240,0.8)', alignSelf: 'center' }}>
+                        <Text style={{
+                            fontSize: 18, color: 'rgba(240,240,240,0.8)',
+                            paddingHorizontal: 30,
+                            alignSelf: 'center'
+                        }}>
                             {phrasesToSayLoading[Math.floor(Math.random() * phrasesToSayLoading.length)]}
                         </Text>
                     </View>

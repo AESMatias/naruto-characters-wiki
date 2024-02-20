@@ -1,29 +1,32 @@
 import {
     StyleSheet, Text, View, Pressable, Button, Alert, Share, Linking, Switch
+    , Image
 } from 'react-native'
-import React from 'react'
+import React, { useLayoutEffect } from 'react'
 import { useState } from 'react'
 import { FontAwesome } from '@expo/vector-icons';
 import { playSound } from '../utils/tapSound.jsx';
 import { openURL } from '../utils/openURL.jsx'
 import { setMuted } from '../store/slices/AccountSlice.jsx'
 import { useDispatch, useSelector } from 'react-redux';
-import { Image } from 'react-native';
 
 export const About = () => {
 
-    const { currentUser } = useSelector((state) => state.userReducer);
-    const { muted } = useSelector((state) => state.userReducer);
 
+    const { currentUser, muted } = useSelector((state) => state.userReducer);
     dispatch = useDispatch();
-    const [isSwitchEnabled, setIsSwitchEnabled] = useState(true);
 
+    [isSound, setIsSound] = useState(false);
+
+    useLayoutEffect(() => {
+        setIsSound(muted);
+    }, [muted]);
 
     const URL = 'https://play.google.com/store/apps/details?id=com.aesmatias.narutocharacterswiki'
 
     const onShare = async () => {
 
-        if (!muted) {
+        if (!isSound) {
             playSound();
         }
 
@@ -47,7 +50,7 @@ export const About = () => {
     };
 
     const openPlayStoreForRating = async () => {
-        if (!muted) {
+        if (isSound === false) {
             playSound();
         }
 
@@ -55,20 +58,20 @@ export const About = () => {
         const playStoreUrl = `market://details?id=${packageName}`;
 
         try {
-            await Linking.openURL(playStoreUrl, muted);
+            await Linking.openURL(playStoreUrl, isSound);
         } catch (error) {
             console.error('Error at opening the application on Play Store:', error);
         }
     };
 
     const toggleSwitch = () => {
-        if (!isSwitchEnabled) {
-            playSound();
-        }
+        // if (!isSwitchEnabled) {
+        //     playSound();
+        // }
 
-        setIsSwitchEnabled(previousState => !previousState);
+        // setIsSwitchEnabled(previousState => !previousState);
 
-        dispatch(setMuted(isSwitchEnabled));
+        dispatch(setMuted(!isSound));
     };
 
 
@@ -81,23 +84,20 @@ export const About = () => {
             <Text style={styles.text}>{currentUser ? `Hello, ` + JSON.parse(currentUser).email + `!` : null}</Text>
 
             <View style={styles.container}>
-                <Pressable onPress={() => { openURL('https://twitter.com/AESMatias', muted) }}>
+                <Pressable style={{ marginHorizontal: 10 }} onPress={() => { openURL('https://twitter.com/AESMatias', isSound) }}>
                     <FontAwesome name="twitter-square" size={60} color={'white'} />
                 </Pressable>
-                <View style={styles.container_text}>
+                {/* <View style={styles.container_text}>
                     <Text style={styles.text}>Twitter / X: </Text>
                     <Text style={styles.text}>@AESMatias </Text>
-                </View>
-            </View>
-
-            <View style={styles.container}>
-                <Pressable onPress={() => { openURL('https://github.com/AESMatias', muted) }}>
+                </View> */}
+                <Pressable style={{ marginHorizontal: 10 }} onPress={() => { openURL('https://github.com/AESMatias', isSound) }}>
                     <FontAwesome name="github-square" size={60} color={'white'} />
                 </Pressable>
-                <View style={styles.container_text}>
+                {/* <View style={styles.container_text}>
                     <Text style={styles.text}>GitHub: </Text>
                     <Text style={styles.text}>@AESMatias </Text>
-                </View>
+                </View> */}
             </View>
 
             <View style={styles.containerButtons}>
@@ -106,16 +106,15 @@ export const About = () => {
             </View>
 
             <View>
-                <Text style={{ color: 'white', marginTop: 3 }}>{(muted === false) ? 'Sound ON' : 'Sound OFF'}</Text>
+                <Text style={{ color: 'white', marginTop: 3 }}>{(isSound === true) ? 'Sound OFF' : 'Sound ON'}</Text>
                 <Switch
-                    trackColor={{ true: "#767577", false: "rgba(120,150,240,1)" }}
-                    thumbColor={!isSwitchEnabled ? "rgba(100,150,150,1)" : "rgba(100,100,100,1)"}
+                    trackColor={{ true: "rgba(120,150,240,1)", false: "#767577" }}
+                    thumbColor={isSound ? "rgba(100,100,100,1)" : "rgba(100,100,100,1)"}
                     onValueChange={toggleSwitch}
-                    value={muted}
+                    value={!isSound}
                     style={{ transform: [{ scale: 1.5 }] }}
                 />
             </View>
-            <Text style={styles.text}>Made by Wholeheartedly ® </Text>
 
         </View>
     )
@@ -135,7 +134,7 @@ const styles = StyleSheet.create({
 
     },
     container: {
-        flex: 1 / 6,
+        flex: 1 / 5,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',

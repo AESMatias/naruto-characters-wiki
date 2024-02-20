@@ -1,10 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
-import {
-    Text, View, StyleSheet, FlatList, SafeAreaView,
-    ActivityIndicator, useColorScheme
-} from 'react-native';
+import { Text, View, StyleSheet, FlatList, SafeAreaView, ActivityIndicator, useColorScheme } from 'react-native';
 import { WriteNameComponent } from '../components/WriteNameComponent.jsx';
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { Character } from '../components/Character.jsx';
 import { loadData } from '../utils/handleData.jsx'
 import { CharModal } from '../components/CharModal.jsx'
@@ -15,6 +12,7 @@ import { CheckAuthStorage } from '../../firebaseConfig.js';
 import { saveUserPreferences } from '../utils/handleData.jsx';
 import { checkFirebaseFavs } from '../utils/handleData.jsx';
 import { phrasesToSayLoading } from '../utils/phrasesWhenLoading.js'
+import { playSound } from '../utils/tapSound.jsx';
 // import Constants from 'expo-constants';
 
 // const versionCode = JSON.stringify(Constants.expoConfig.android);
@@ -56,6 +54,7 @@ export const Home = () => {
     const { currentUser } = useSelector((state) => state.userReducer);
     const { firebaseFavoritesFetched } = useSelector((state) => state.userReducer);
 
+
     // const handleAddFav = () => {
     //     playSound();
     //     try {
@@ -80,14 +79,14 @@ export const Home = () => {
     });
 
     useEffect(() => {
-        loadData(setdataFetched, dispatch, currentUser);
+        // loadData(setdataFetched, dispatch, currentUser);
 
-        favoritesTemp.forEach((char) => {
-            dispatch(addToFavorites(char, favorites));
-            console.error('AAA Add to favorites TEMP:', char);
-            // console.log('AAA 222222:', favoritesTemp);
-        });
-    }, []); // Started when the component is mounted
+        // favoritesTemp.forEach((char) => {
+        //     dispatch(addToFavorites(char, favorites));
+        //     console.error('AAA Add to favorites TEMP:', char);
+        // console.log('AAA 222222:', favoritesTemp);
+    });
+    // }, []); // Started when the component is mounted
 
 
     // useEffect(() => {
@@ -99,10 +98,17 @@ export const Home = () => {
     // }, []);
 
 
-    useEffect(() => {
-        console.log('Refreshing the home, but nothing happend...')
+    useLayoutEffect(() => {
+        loadData(setdataFetched, dispatch, currentUser);
+
+        favoritesTemp.forEach((char) => {
+            dispatch(addToFavorites(char, favorites));
+        });
+
+        // console.log('Refreshing the home...')
         // setFavoritesTemp([]);
         setRefreshing(false);
+        onChangeText('');
     }, [refreshing]); // Observe changes in the refresing state
 
 
@@ -128,7 +134,7 @@ export const Home = () => {
 
     const handleAddFav = async () => {
 
-        playSound();
+        // playSound();
         try {
             // firebaseData = [];
             firebaseData = await checkFirebaseFavs(currentUser);
@@ -152,9 +158,11 @@ export const Home = () => {
         }
     }
 
+    const settedPhrase = phrasesToSayLoading[Math.floor(Math.random() * phrasesToSayLoading.length)];
+
     return (
         <SafeAreaView style={styles.container}>
-            <StatusBar style='auto' />
+            <StatusBar style='white' />
             <Modal id='modal_id' isModalOpen={charModal}
                 favoritesTemp={favoritesTemp}
                 setFavoritesTemp={setFavoritesTemp}
@@ -173,14 +181,17 @@ export const Home = () => {
             <View style={styles.flat_container}>
                 {dataFetched && dataFetched.length === 0 ?
                     <View style={styles.flat_container}>
-                        <ActivityIndicator size={100} color="#0000ff" />
+                        <ActivityIndicator size={100} color="#ffffff" />
                         <Text style={{
+                            fontWeight: 'bold', color: 'rgba(240,240,240,0.5)',
                             fontSize: 18, color: 'rgba(240,240,240,0.8)',
                             paddingHorizontal: 30,
+                            marginTop: 30,
                             alignSelf: 'center'
                         }}>
-                            {phrasesToSayLoading[Math.floor(Math.random() * phrasesToSayLoading.length)]}
+                            {settedPhrase}
                         </Text>
+
                     </View>
                     : <FlatList
                         data={(dataFetched !== undefined) ?

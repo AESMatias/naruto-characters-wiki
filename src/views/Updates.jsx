@@ -1,6 +1,5 @@
-import {
-    StyleSheet, Text, View, Pressable, Button, Alert, Share, Linking
-} from 'react-native'
+import { StyleSheet, Text, View, Pressable, Button, Alert, Share, Linking } from 'react-native'
+
 import React from 'react'
 import { FontAwesome } from '@expo/vector-icons';
 import { openURL } from '../utils/openURL'

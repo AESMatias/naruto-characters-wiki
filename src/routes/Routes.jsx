@@ -7,7 +7,7 @@ import { Home } from '../views/Home.jsx';
 import { About } from '../views/About.jsx';
 import { SearchBy } from '../views/SearchBy.jsx';
 import { Favorites } from '../views/Favorites.jsx';
-import { Alert, StyleSheet, TouchableOpacity, View, useColorScheme } from 'react-native';
+import { Alert, StyleSheet, TouchableOpacity, View, useColorScheme, Image } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
@@ -16,14 +16,11 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { CharDetails } from '../views/CharDetails.jsx';
 import { Updates } from '../views/Updates.jsx';
 import { MyAccount } from '../views/MyAccount.jsx';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { incrementCounterFavorites } from '../store/slices/AccountSlice.jsx';
 import { updateFavoritesLength } from '../utils/handleData.jsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { useState, useEffect } from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { Image } from 'react-native';
-
 // Navigator
 export function Navigator() {
 

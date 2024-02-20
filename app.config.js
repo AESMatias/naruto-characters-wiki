@@ -63,8 +63,8 @@ export default {
       }
     },
     "eas": {
-      "projectId": process.env.PROJECT_ID
+      "projectId": "e91bdd87-cec4-4d02-8ad6-6186ab118986"
     },
-    "projectId": process.env.PROJECT_ID
+    "projectId": "e91bdd87-cec4-4d02-8ad6-6186ab118986"
   }
 }

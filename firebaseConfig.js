@@ -7,6 +7,7 @@ import { getAuth, setPersistence } from "firebase/auth";
 import { Alert } from "react-native";
 import { browserSessionPersistence } from "firebase/auth";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+// import AsyncStorage from '@react-native-community/async-storage'
 import { setUser, clearUser } from './src/store/slices/AccountSlice.jsx';
 import Constants from 'expo-constants';
 import { getFirestore } from 'firebase/firestore';

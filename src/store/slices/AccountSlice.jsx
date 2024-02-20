@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { Alert } from 'react-native';
 
 const userSlice = createSlice({
     name: 'user',

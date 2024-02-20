@@ -1,5 +1,6 @@
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+// import AsyncStorage from '@react-native-community/async-storage'
 import { database } from "../../firebaseConfig.js";
 import { doc, getDoc, setDoc, updateDoc, collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { Alert } from "react-native";

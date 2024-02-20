@@ -1,6 +1,8 @@
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import {
+    Image, Pressable, ScrollView, StyleSheet,
+    Text, View, Share, Alert, TouchableOpacity
+} from 'react-native'
 import React, { useLayoutEffect, useState } from 'react'
-import { TouchableOpacity, FlatList } from 'react-native'
 import { AntDesign } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -12,7 +14,6 @@ import { globalStyles } from '../styles/styles.jsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToFavorites, removeFromFavorites } from '../store/slices/AccountSlice.jsx';
 import { toStoreFavChar } from '../utils/handleData.jsx';
-import { Share, Alert } from 'react-native';
 import { toRemoveFavChar } from '../utils/handleData.jsx'
 // import { useFonts } from 'expo-font';
 // import { Roboto } from '@expo-google-fonts/inter'

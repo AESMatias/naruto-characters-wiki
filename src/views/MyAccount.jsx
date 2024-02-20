@@ -1,6 +1,5 @@
-import {
-    StyleSheet, Text, View, Alert, Image, TextInput, TouchableOpacity
-} from 'react-native'
+import { StyleSheet, Text, View, Alert, Image, TextInput, TouchableOpacity } from 'react-native'
+
 import React, { useEffect } from 'react'
 import { useState, useLayoutEffect } from 'react'
 import { BlurView } from 'expo-blur';
@@ -23,6 +22,7 @@ import { GoogleAuthProvider, onAuthStateChanged, signInWithCredential } from 'fi
 import { getAuth } from 'firebase/auth';
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+// import AsyncStorage from '@react-native-community/async-storage'
 import { StatusBar } from 'expo-status-bar';
 
 
@@ -39,7 +39,7 @@ const LoggedScreen = () => {
 
     return (
         <View style={styles.background}>
-            <StatusBar style='auto' />
+            <StatusBar style='white' />
             <Text style={styles.text}>You are logged in as: </Text>
             <Text style={styles.text}>{currentUser ? JSON.parse(currentUser).email : 'Not Logged'}</Text>
             <TouchableOpacity
@@ -227,7 +227,7 @@ const LoginScreen = () => {
 
     return (
         < View style={styles.background} >
-            <StatusBar style='auto' />
+            <StatusBar style='white' />
             {/* < Image source={require('../assets/logo.png')} style={[styles.image, StyleSheet.absoluteFill]} /> */}
             {/* <View style={styles.backgroundObject}></View> */}
             {/* <ScrollView contentContainerStyle={{

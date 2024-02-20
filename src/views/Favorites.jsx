@@ -1,9 +1,6 @@
-import {
-    StyleSheet, FlatList, View, Alert, Text, ActivityIndicator
-} from 'react-native'
-import React from 'react'
+import { StyleSheet, FlatList, View, Alert, Text, ActivityIndicator } from 'react-native'
 import { Modal } from '../components/Modal.jsx'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useLayoutEffect } from 'react'
 import { CharModal } from '../components/CharModal.jsx';
 import { loadData, retrieveData } from '../utils/handleData.jsx';
 import { Character } from '../components/Character.jsx';
@@ -11,7 +8,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setFirebaseFavoritesFetched } from '../store/slices/AccountSlice.jsx';
 import { orderBy, doc, collection, onSnapshot, query } from 'firebase/firestore';
 import { database } from '../../firebaseConfig.js';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { incrementCounterFavorites } from '../store/slices/AccountSlice.jsx';
 import { updateFavoritesLength } from '../utils/handleData.jsx';
 import { useNavigation } from '@react-navigation/native';
@@ -30,7 +26,7 @@ export const Favorites = () => {
     const dispatch = useDispatch();
     const { navigate } = useNavigation();
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (currentUser !== null && currentUser !== undefined && JSON.parse(currentUser).uid) {
             try {
                 const userId = JSON.parse(currentUser).uid;
@@ -54,7 +50,7 @@ export const Favorites = () => {
     }, []);
 
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         // loadData(setdataFetched);
         retrieveData(currentUser, dispatch).then((data) => {
             setFavorites(data);
@@ -69,7 +65,7 @@ export const Favorites = () => {
 
     // updateFavoritesLength(incrementCounterFavorites, dispatch, currentUser);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         // onChangeText('');
         if (refreshing) {
             setRefreshing(false);
@@ -92,13 +88,13 @@ export const Favorites = () => {
         // updateFavoritesLength(incrementCounterFavorites, dispatch, currentUser);
     }, [refreshing]); // Observe changes in the refresing state
 
+    const settedPhrase = phrasesToSayLoading[Math.floor(Math.random() * phrasesToSayLoading.length)];
+
     return (
 
         <View style={styles.container}>
-
             {/* {favorites.length > 0 ? <Text>favorites</Text> :
                 <Text>There are no favorites yet</Text>} */}
-
             <Modal id='modal_id' isModalOpen={charModal}
                 withInput
                 FilledModal={[FilledModal]}
@@ -112,7 +108,6 @@ export const Favorites = () => {
                 {/* <Text>INSIDE MODAL</Text> */}
             </Modal>
             <View style={styles.flat_container}>
-
 
                 {currentUser ? (
                     (favorites && favorites.length > 0) ? (
@@ -133,9 +128,13 @@ export const Favorites = () => {
                         />
                     ) : (
                         <View style={styles.flat_containerLogin}>
-                            <ActivityIndicator size={100} color="#0000ff" />
-                            <Text style={{ fontSize: 18, color: 'rgba(240,240,240,0.8)', alignSelf: 'center' }}>
-                                {phrasesToSayLoading[Math.floor(Math.random() * phrasesToSayLoading.length)]}
+                            <ActivityIndicator size={100} color="#ffffff" />
+                            <Text style={{
+                                fontSize: 18, fontWeight: 'bold', marginTop: 30,
+                                marginHorizontal: 30,
+                                color: 'rgba(240,240,240,0.5)', alignSelf: 'center'
+                            }}>
+                                {settedPhrase}
                             </Text>
                         </View>
                     )
@@ -145,7 +144,6 @@ export const Favorites = () => {
                     </View>
 
                 )}
-
 
             </View>
             {/* <WriteNameComponent setdataFetched={setdataFetched} onChangeText={onChangeText} text={text} /> */}
